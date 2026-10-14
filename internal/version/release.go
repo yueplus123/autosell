@@ -14,9 +14,9 @@ import (
 
 const (
 	// repoOwner GitHub 仓库所有者，用于检测最新发布版本
-	repoOwner = "dujiao-next"
+	repoOwner = "yueplus123"
 	// repoName GitHub 仓库名称
-	repoName = "dujiao-next"
+	repoName = "autosell"
 
 	githubAPIBaseURL = "https://api.github.com"
 	releaseUserAgent = "dujiao-next-update-checker"
