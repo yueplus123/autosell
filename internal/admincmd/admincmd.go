@@ -1,5 +1,5 @@
 // Package admincmd 提供 admin 子命令实现，作为运维工具集合：
-// 列出管理员、重置 2FA、重置密码。所有命令共享调用方初始化好的
+// 列出管理员、重置 2FA、重置密码、初始化业务分类。所有命令共享调用方初始化好的
 // gormdb.DB，无需重复 config.Load / InitDB。
 //
 // 入口由 cmd/server/main.go 在检测到 "admin" 子命令时调用 Run(args)，
@@ -37,7 +37,9 @@ func Usage() {
   dujiao-api admin reset-2fa --username <name>            重置指定管理员的 2FA
   dujiao-api admin reset-password --username <name> [--password <new>]
                                                           重置管理员密码（超管忘记密码恢复用）
-                                                          不传 --password 时从 stdin 隐藏读入两次确认`)
+                                                          不传 --password 时从 stdin 隐藏读入两次确认
+  dujiao-api admin seed-categories                        一键创建「AI 服务」「二次元赞助」两大业务分类及常用子分类
+                                                          可重复执行：已存在的分类不会被修改`)
 }
 
 // Run 分发 admin 子命令。args 是去掉 "admin" 之后的参数（os.Args[2:]）。
@@ -73,6 +75,8 @@ func Run(args []string) {
 			os.Exit(1)
 		}
 		resetPassword(username, password)
+	case "seed-categories":
+		runSeedBusinessCategories()
 	default:
 		Usage()
 		os.Exit(1)
