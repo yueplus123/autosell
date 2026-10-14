@@ -97,17 +97,17 @@
           <div class="flex justify-center">
             <div class="relative flex h-60 w-full max-w-md items-center justify-center sm:h-72">
               <RouterLink
-                v-for="(card, i) in gameCards"
+                v-for="card in gameCards"
                 :key="card.key"
                 :to="card.link"
                 :aria-label="card.label"
                 class="game-card absolute flex h-48 w-36 flex-col items-center justify-end overflow-hidden rounded-3xl border-4 border-white/80 bg-white shadow-2xl shadow-fuchsia-950/30 transition duration-300 hover:z-20 hover:-translate-y-4 sm:h-60 sm:w-44"
-                :style="{ transform: `translateX(${FAN[i].x}) rotate(${FAN[i].r}deg)`, zIndex: FAN[i].z }"
+                :style="{ transform: `translateX(${card.fan.x}) rotate(${card.fan.r}deg)`, zIndex: card.fan.z }"
               >
                 <img v-if="card.icon" :src="getImageUrl(card.icon)" :alt="card.label" loading="lazy" class="absolute inset-0 h-full w-full object-cover" />
-                <div v-else class="absolute inset-0 grid place-items-center" :class="FAN[i].bg">
+                <div v-else class="absolute inset-0 grid place-items-center" :class="card.fan.bg">
                   <span v-if="card.initial" class="text-6xl font-black text-white/95 drop-shadow">{{ card.initial }}</span>
-                  <component :is="FAN[i].icon" v-else class="h-14 w-14 text-white/95" aria-hidden="true" />
+                  <component :is="card.fan.icon" v-else class="h-14 w-14 text-white/95" aria-hidden="true" />
                 </div>
                 <span v-if="card.label" class="relative z-10 w-full bg-linear-to-t from-black/70 to-transparent px-2 pb-3 pt-8 text-center text-sm font-bold text-white">{{ card.label }}</span>
               </RouterLink>
@@ -242,7 +242,7 @@ const TileFace = defineComponent({
       if (tile?.category) {
         return h('span', { class: ['font-black leading-none', p.large ? 'text-5xl md:text-8xl' : 'text-3xl md:text-6xl', color] }, catName(tile.category).slice(0, 1))
       }
-      return h(FALLBACK_ICONS[idx % FALLBACK_ICONS.length], { class: ['h-1/2 w-1/2', color], strokeWidth: 1.6, 'aria-hidden': 'true' })
+      return h(FALLBACK_ICONS[idx % FALLBACK_ICONS.length] ?? Sparkles, { class: ['h-1/2 w-1/2', color], strokeWidth: 1.6, 'aria-hidden': 'true' })
     }
   },
 })
@@ -257,12 +257,13 @@ const FAN = [
 
 const gameCards = computed(() => {
   const children = gameLine.value.children.slice(0, FAN.length)
-  return FAN.map((_, i) => {
+  return FAN.map((fan, i) => {
     const cat = children[i]
-    if (!cat) return { key: `placeholder-${i}`, link: gameLine.value.link, label: '', icon: '', initial: '' }
+    if (!cat) return { key: `placeholder-${i}`, fan, link: gameLine.value.link, label: '', icon: '', initial: '' }
     const label = catName(cat)
     return {
       key: `cat-${cat.id}`,
+      fan,
       link: businessZonePath('game', String(cat.slug)),
       label,
       icon: cat.icon ? String(cat.icon) : '',
