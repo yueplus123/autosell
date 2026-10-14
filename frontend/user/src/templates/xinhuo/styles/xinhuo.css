@@ -1,0 +1,117 @@
+/*
+ * 薪火官网模板（xinhuo）样式。
+ * 只放 Tailwind 类表达不了的部分：品牌色变量、字体栈、首屏图标砖块的立体与倒影效果。
+ */
+
+.xinhuo-scope,
+body.xinhuo-tokens {
+  --xh-accent: #0a72e8;
+  --xh-accent-hover: #0756b3;
+  --xh-ink: #1d1d1f;
+  --xh-muted: #6e6e73;
+  --xh-line: #d2d2d7;
+  --xh-page: #f5f5f7;
+}
+
+.xinhuo-scope {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+}
+
+/* ==================== 首屏 ==================== */
+
+.xh-hero {
+  background:
+    radial-gradient(ellipse at 18% 88%, rgba(37, 99, 235, 0.28), transparent 42%),
+    radial-gradient(ellipse at 62% 92%, rgba(234, 88, 12, 0.22), transparent 38%),
+    radial-gradient(ellipse at 94% 78%, rgba(22, 163, 74, 0.24), transparent 34%),
+    #000;
+}
+
+/* 图标墙：容器按比例缩放，砖块位置 / 尺寸都用百分比，桌面与手机各一套坐标（见 heroTiles 配置） */
+.xh-wall {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1200 / 430;
+}
+
+.xh-tile {
+  position: absolute;
+  left: calc(var(--x) - var(--s) / 2);
+  top: var(--y);
+  width: var(--s);
+  aspect-ratio: 1;
+  border-radius: 24%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+}
+
+.xh-tile img {
+  width: 56%;
+  height: 56%;
+  object-fit: contain;
+  pointer-events: none;
+  user-select: none;
+}
+
+.xh-tile--wide img {
+  width: 74%;
+}
+
+.xh-tile--light {
+  background: #f2f2f5;
+  box-shadow:
+    0 24px 40px rgba(0, 0, 0, 0.6),
+    0 0 46px var(--glow, transparent),
+    inset 0 2px 0 #fff,
+    inset 0 -6px 14px rgba(0, 0, 0, 0.12);
+}
+
+.xh-tile--dark {
+  background: #0b0b0c;
+  border: 1.5px solid #3a3a40;
+  box-shadow:
+    0 28px 56px rgba(0, 0, 0, 0.75),
+    0 0 50px var(--glow, rgba(255, 255, 255, 0.08)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+
+/* 黑色线稿 logo 放在暗色砖块上时反白 */
+.xh-tile--dark img {
+  filter: invert(1);
+}
+
+.xh-tile--back {
+  filter: blur(1.2px);
+  opacity: 0.85;
+}
+
+.xh-tile--front {
+  -webkit-box-reflect: below 10px linear-gradient(transparent 58%, rgba(255, 255, 255, 0.22));
+}
+
+@media (max-width: 640px) {
+  .xh-wall {
+    aspect-ratio: 390 / 260;
+  }
+
+  .xh-tile {
+    left: calc(var(--mx) - var(--ms) / 2);
+    top: var(--my);
+    width: var(--ms);
+  }
+
+  .xh-tile--front {
+    -webkit-box-reflect: below 6px linear-gradient(transparent 60%, rgba(255, 255, 255, 0.22));
+  }
+}
+
+/* 横向滑动的分类标签条，隐藏滚动条 */
+.xh-scroll-x {
+  scrollbar-width: none;
+}
+
+.xh-scroll-x::-webkit-scrollbar {
+  display: none;
+}
