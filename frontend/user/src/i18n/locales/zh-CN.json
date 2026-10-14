@@ -137,6 +137,30 @@
     "latest": {
       "title": "最新动态",
       "description": "随时掌握我们的最新消息和公告"
+    },
+    "business": {
+      "title": "我们的业务",
+      "description": "AI 工具与二次元游戏代充，一站搞定",
+      "ai": {
+        "eyebrow": "AI 服务",
+        "title": "主流 AI，即买即用",
+        "description": "ChatGPT、Claude、Midjourney 等热门 AI 账号与额度，下单自动发货，开箱即用。",
+        "cta": "进入 AI 专区",
+        "hotTitle": "AI 服务 · 热门",
+        "highlight1": "自动发货",
+        "highlight2": "多平台可选",
+        "highlight3": "售后保障"
+      },
+      "game": {
+        "eyebrow": "二次元代充",
+        "title": "热门手游，放心代充",
+        "description": "原神、崩坏：星穹铁道、绝区零等热门游戏，充值到账快，价格更实惠。",
+        "cta": "进入代充专区",
+        "hotTitle": "二次元代充 · 热门",
+        "highlight1": "极速到账",
+        "highlight2": "价格实惠",
+        "highlight3": "热门游戏全覆盖"
+      }
     }
   },
   "products": {

@@ -137,6 +137,30 @@
     "latest": {
       "title": "最新動態",
       "description": "隨時掌握我們的最新消息和公告"
+    },
+    "business": {
+      "title": "我們的業務",
+      "description": "AI 工具與二次元遊戲代儲，一站搞定",
+      "ai": {
+        "eyebrow": "AI 服務",
+        "title": "主流 AI，即買即用",
+        "description": "ChatGPT、Claude、Midjourney 等熱門 AI 帳號與額度，下單自動發貨，開箱即用。",
+        "cta": "進入 AI 專區",
+        "hotTitle": "AI 服務 · 熱門",
+        "highlight1": "自動發貨",
+        "highlight2": "多平台可選",
+        "highlight3": "售後保障"
+      },
+      "game": {
+        "eyebrow": "二次元代儲",
+        "title": "熱門手遊，放心代儲",
+        "description": "原神、崩壞：星穹鐵道、絕區零等熱門遊戲，儲值到帳快，價格更實惠。",
+        "cta": "進入代儲專區",
+        "hotTitle": "二次元代儲 · 熱門",
+        "highlight1": "極速到帳",
+        "highlight2": "價格實惠",
+        "highlight3": "熱門遊戲全覆蓋"
+      }
     }
   },
   "products": {

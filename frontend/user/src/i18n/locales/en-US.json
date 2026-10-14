@@ -137,6 +137,30 @@
     "latest": {
       "title": "Latest Updates",
       "description": "Stay updated with our latest news and announcements"
+    },
+    "business": {
+      "title": "What We Offer",
+      "description": "AI tools and anime game top-ups, all in one place",
+      "ai": {
+        "eyebrow": "AI Services",
+        "title": "Top AI tools, ready to use",
+        "description": "Accounts and credits for ChatGPT, Claude, Midjourney and more, delivered automatically right after checkout.",
+        "cta": "Browse AI",
+        "hotTitle": "Popular in AI",
+        "highlight1": "Instant delivery",
+        "highlight2": "Multiple platforms",
+        "highlight3": "After-sales support"
+      },
+      "game": {
+        "eyebrow": "Game Top-up",
+        "title": "Popular games, easy top-ups",
+        "description": "Top up Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more, with fast crediting and great prices.",
+        "cta": "Browse Top-ups",
+        "hotTitle": "Popular Top-ups",
+        "highlight1": "Fast crediting",
+        "highlight2": "Great prices",
+        "highlight3": "Popular titles covered"
+      }
     }
   },
   "products": {

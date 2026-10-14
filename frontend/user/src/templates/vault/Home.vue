@@ -5,6 +5,7 @@
 
     <!-- ==================== 列表模式 ==================== -->
     <template v-if="isListMode">
+      <BusinessShowcase v-if="showBusinessShowcase" container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold" />
       <section class="mx-auto w-full max-w-[1180px] px-4 py-6 sm:px-6">
         <div class="grid items-start gap-5 lg:grid-cols-[248px_1fr] lg:gap-7">
           <VaultCategorySidebar
@@ -79,6 +80,18 @@
 
     <!-- ==================== 卡片模式（默认） ==================== -->
     <template v-else>
+      <!-- 双业务入口 + 各业务热门商品 -->
+      <BusinessShowcase
+        v-if="showBusinessShowcase"
+        show-products
+        container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold"
+        product-grid-class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]"
+      >
+        <template #product="{ product, index }">
+          <VaultProductCard :product="product" :index="index" @quick-buy="openQuickBuy" />
+        </template>
+      </BusinessShowcase>
+
       <!-- 分类块 -->
       <section v-if="topCategories.length" class="mx-auto w-full max-w-[1180px] px-4 py-9 sm:px-6">
         <div class="mb-[22px] flex flex-wrap items-end justify-between gap-4">
@@ -184,6 +197,7 @@ import VaultCategorySidebar from './components/VaultCategorySidebar.vue'
 import VaultBannerHero from './components/VaultBannerHero.vue'
 import ProductQuickBuy from '../../components/ProductQuickBuy.vue'
 import AnnouncementModal from '../../components/AnnouncementModal.vue'
+import BusinessShowcase from '../../components/BusinessShowcase.vue'
 import { useAnnouncement, type HomeAnnouncement } from '../../composables/useAnnouncement'
 
 const route = useRoute()
@@ -192,6 +206,8 @@ const { getLocalizedText } = useLocalized()
 const appStore = useAppStore()
 
 const isListMode = computed(() => appStore.config?.template_mode === 'list')
+// 双业务入口只在首页展示（列表模式下 /products、/categories/* 也复用本视图）
+const showBusinessShowcase = computed(() => route.name === 'home')
 
 // ==================== 快速购买 ====================
 const quickBuyProduct = ref<any>(null)

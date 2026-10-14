@@ -56,8 +56,13 @@
         </div>
       </section>
 
+      <!-- 双业务入口（仅首页） -->
+      <div v-if="showBusinessShowcase" :class="showHeroSection ? '' : 'pt-14 md:pt-16'">
+        <BusinessShowcase />
+      </div>
+
       <!-- Main: Left Categories + Right Product List -->
-      <section class="relative z-10 pb-6" :class="showHeroSection ? 'pt-6' : 'pt-24'">
+      <section class="relative z-10 pb-6" :class="showHeroSection || showBusinessShowcase ? 'pt-6' : 'pt-24'">
         <div class="container mx-auto px-4">
           <div class="flex flex-col lg:flex-row gap-6">
 
@@ -260,7 +265,22 @@
       </div>
     </section>
 
-    <section id="featured" class="relative z-10 pb-14" :class="showHeroSection ? 'pt-14' : 'pt-32 md:pt-36'">
+    <!-- 双业务入口 + 各业务热门商品 -->
+    <div v-if="showBusinessShowcase" :class="showHeroSection ? '' : 'pt-14 md:pt-16'">
+      <BusinessShowcase show-products>
+        <template #product="{ product, index }">
+          <ProductCard
+            :product="product"
+            :index="index"
+            :animation-step="60"
+            @click="goToProduct"
+            @quick-buy="openQuickBuy"
+          />
+        </template>
+      </BusinessShowcase>
+    </div>
+
+    <section id="featured" class="relative z-10 pb-14" :class="showBusinessShowcase ? 'pt-8' : showHeroSection ? 'pt-14' : 'pt-32 md:pt-36'">
       <div class="container mx-auto px-4">
         <div class="mb-8 flex items-end justify-between gap-4">
           <div>
@@ -367,6 +387,7 @@ import CategorySidebar from '../components/CategorySidebar.vue'
 import PaginationNav from '../components/PaginationNav.vue'
 import EmptyState from '../components/EmptyState.vue'
 import AnnouncementModal from '../components/AnnouncementModal.vue'
+import BusinessShowcase from '../components/BusinessShowcase.vue'
 import { useAnnouncement, type HomeAnnouncement } from '../composables/useAnnouncement'
 
 const router = useRouter()
@@ -446,6 +467,8 @@ const listProductGroups = useProductListGroups(listProducts, listCategoryMap)
 
 // ==================== SEO ====================
 const route = useRoute()
+// 双业务入口只在首页展示（列表模式下 /products、/categories/* 也复用本视图）
+const showBusinessShowcase = computed(() => route.name === 'home')
 const seoCategoryName = computed(() => {
   if (!listSelectedCategory.value) return ''
   const cat = listCategoryMap.value.get(listSelectedCategory.value)
