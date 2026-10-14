@@ -4,19 +4,16 @@
 # 用法（在服务器上以 root 执行）：
 #   curl -fsSL https://raw.githubusercontent.com/yueplus123/autosell/main/scripts/update.sh | bash
 #
-# 可选环境变量：
+# 可选环境变量（一般不用设，脚本会自动识别 systemd 服务 dujiao-next 或 dujiao）：
 #   VERSION=v1.1.2      指定版本（默认最新发布）
-#   INSTALL_DIR=/path   程序目录（默认 /opt/dujiao-next）
-#   SERVICE=name        systemd 服务名（默认 dujiao-next）
+#   SERVICE=name        systemd 服务名
+#   INSTALL_DIR=/path   程序目录（默认取服务的工作目录）
 #
 # 做的事：下载 → 校验 → 备份当前程序与数据目录 → 替换 → 重启 → 健康检查（失败自动回滚）
 #        → 初始化业务分类（可重复执行，已存在的分类不改动）。
 set -euo pipefail
 
 REPO="yueplus123/autosell"
-INSTALL_DIR="${INSTALL_DIR:-/opt/dujiao-next}"
-SERVICE="${SERVICE:-dujiao-next}"
-BINARY="${INSTALL_DIR}/dujiao-next"
 BACKUP_DIR="/root/dujiao-backups"
 
 info() { printf '\033[1;32m==>\033[0m %s\n' "$*"; }
@@ -27,12 +24,55 @@ die() { printf '\033[1;31m[失败]\033[0m %s\n' "$*" >&2; exit 1; }
 command -v curl >/dev/null || die "缺少 curl"
 command -v tar >/dev/null || die "缺少 tar"
 
-if [ ! -x "$BINARY" ] || ! systemctl cat "${SERVICE}.service" >/dev/null 2>&1; then
-  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Image}} {{.Names}}' 2>/dev/null | grep -qi dujiao; then
-    die "检测到程序以 Docker 方式运行，本脚本只适用于一键安装脚本（systemd）部署。"
-  fi
-  die "没有在 ${INSTALL_DIR} 找到程序或 ${SERVICE} 服务。如安装在别处，请用 INSTALL_DIR=/你的目录 重新执行。"
+# ---------- 识别安装位置 ----------
+if [ -z "${SERVICE:-}" ]; then
+  for candidate in dujiao-next dujiao; do
+    if systemctl cat "${candidate}.service" >/dev/null 2>&1; then
+      SERVICE="$candidate"
+      break
+    fi
+  done
 fi
+if [ -z "${SERVICE:-}" ] || ! systemctl cat "${SERVICE}.service" >/dev/null 2>&1; then
+  if command -v docker >/dev/null 2>&1 && docker ps --format '{{.Image}} {{.Names}}' 2>/dev/null | grep -qi dujiao; then
+    die "检测到程序以 Docker 方式运行，本脚本只适用于 systemd 部署。"
+  fi
+  die "没有找到 dujiao-next 或 dujiao 服务。请用 SERVICE=服务名 重新执行。"
+fi
+
+EXEC_PATH="$(systemctl show -p ExecStart --value "$SERVICE" 2>/dev/null | sed -n 's/.*path=\([^ ;]*\).*/\1/p' | head -n1 || true)"
+WORK_DIR="$(systemctl show -p WorkingDirectory --value "$SERVICE" 2>/dev/null || true)"
+if [ -z "${INSTALL_DIR:-}" ]; then
+  if [ -n "$WORK_DIR" ] && [ "$WORK_DIR" != "/" ]; then
+    INSTALL_DIR="$WORK_DIR"
+  elif [ -n "$EXEC_PATH" ]; then
+    INSTALL_DIR="$(dirname "$EXEC_PATH")"
+  else
+    die "无法识别 ${SERVICE} 的程序目录，请用 INSTALL_DIR=/你的目录 重新执行。"
+  fi
+fi
+BINARY="${EXEC_PATH:-${INSTALL_DIR}/dujiao-next}"
+[ -x "$BINARY" ] || BINARY="${INSTALL_DIR}/dujiao-next"
+[ -x "$BINARY" ] || die "没有找到程序文件：${BINARY}"
+[ -f "${INSTALL_DIR}/config.yml" ] || die "没有在 ${INSTALL_DIR} 找到 config.yml，请用 INSTALL_DIR=/你的目录 重新执行。"
+
+# 服务以哪个用户运行：替换后的文件保持原属主，分类初始化也用这个用户执行，
+# 避免数据库等文件被 root 接管导致服务无法写入。
+RUN_USER="$(systemctl show -p User --value "$SERVICE" 2>/dev/null || true)"
+BIN_OWNER="$(stat -c '%U:%G' "$BINARY")"
+run_as_service_user() {
+  if [ -n "$RUN_USER" ] && [ "$RUN_USER" != "root" ]; then
+    if command -v runuser >/dev/null 2>&1; then
+      runuser -u "$RUN_USER" -- "$@"
+    else
+      su -s /bin/sh "$RUN_USER" -c "$(printf '%q ' "$@")"
+    fi
+  else
+    "$@"
+  fi
+}
+
+info "服务：${SERVICE}　目录：${INSTALL_DIR}　运行用户：${RUN_USER:-root}"
 
 case "$(uname -m)" in
   x86_64 | amd64) ARCH="x86_64" ;;
@@ -93,6 +133,7 @@ rollback() {
 # ---------- 替换并启动 ----------
 info "替换程序并启动…"
 install -m 755 "$NEW_BIN" "$BINARY"
+chown "$BIN_OWNER" "$BINARY"
 systemctl start "$SERVICE" || rollback
 sleep 5
 systemctl is-active --quiet "$SERVICE" || rollback
@@ -100,7 +141,8 @@ info "服务已启动"
 
 # ---------- 初始化业务分类 ----------
 info "初始化业务分类…"
-( cd "$INSTALL_DIR" && "$BINARY" admin seed-categories ) || warn "分类初始化失败，可稍后手动执行：cd ${INSTALL_DIR} && ./dujiao-next admin seed-categories"
+( cd "$INSTALL_DIR" && run_as_service_user "$BINARY" admin seed-categories ) \
+  || warn "分类初始化失败，可稍后手动执行：cd ${INSTALL_DIR} && runuser -u ${RUN_USER:-root} -- ${BINARY} admin seed-categories"
 
 # 只保留最近 5 份备份
 ls -1t "${BACKUP_DIR}"/dujiao-next.* 2>/dev/null | tail -n +6 | xargs -r rm -f

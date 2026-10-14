@@ -7,6 +7,10 @@ on:
     # 推送到 main 时自动打下一个版本号并发布，服务器用 scripts/update.sh 一条命令即可更新
     branches:
       - main
+    # 只改了更新脚本或文档时不发新版本（对标签推送不生效）
+    paths-ignore:
+      - 'scripts/update.sh'
+      - '**.md'
 
 permissions:
   contents: write
