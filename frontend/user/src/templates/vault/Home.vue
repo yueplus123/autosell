@@ -1,18 +1,5 @@
 <template>
   <div>
-    <!-- 业务主视觉（AI + 二次元，仅首页，位于最顶部） -->
-    <BusinessShowcase
-      v-if="showBusinessShowcase"
-      :show-products="!isListMode"
-      container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold"
-      hero-top-class="pt-16 md:pt-20"
-      product-grid-class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]"
-    >
-      <template #product="{ product, index }">
-        <VaultProductCard :product="product" :index="index" @quick-buy="openQuickBuy" />
-      </template>
-    </BusinessShowcase>
-
     <!-- 站长配置的横幅轮播（两种模式共用，顶部展示） -->
     <VaultBannerHero />
 
@@ -197,7 +184,6 @@ import VaultCategorySidebar from './components/VaultCategorySidebar.vue'
 import VaultBannerHero from './components/VaultBannerHero.vue'
 import ProductQuickBuy from '../../components/ProductQuickBuy.vue'
 import AnnouncementModal from '../../components/AnnouncementModal.vue'
-import BusinessShowcase from '../../components/BusinessShowcase.vue'
 import { useAnnouncement, type HomeAnnouncement } from '../../composables/useAnnouncement'
 
 const route = useRoute()
@@ -206,8 +192,6 @@ const { getLocalizedText } = useLocalized()
 const appStore = useAppStore()
 
 const isListMode = computed(() => appStore.config?.template_mode === 'list')
-// 双业务入口只在首页展示（列表模式下 /products、/categories/* 也复用本视图）
-const showBusinessShowcase = computed(() => route.name === 'home')
 
 // ==================== 快速购买 ====================
 const quickBuyProduct = ref<any>(null)

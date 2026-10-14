@@ -20,12 +20,25 @@
           </div>
         </div>
 
-        <a href="#shop" class="inline-flex flex-col items-center gap-1.5 pb-6 pt-1 text-[13px] text-[#a1a1a6] transition-colors hover:text-white sm:pb-7" @click.prevent="scrollToId('shop')">
+        <div class="mt-1 flex justify-center sm:mt-2">
+          <RouterLink
+            :to="aiZoneLink"
+            class="group inline-flex items-center gap-2 rounded-full bg-white px-7 py-3 text-[15px] font-semibold text-black shadow-[0_0_40px_rgba(255,255,255,0.18)] transition hover:scale-105 sm:text-base"
+          >
+            {{ t('home.business.ai.cta') }}
+            <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+          </RouterLink>
+        </div>
+
+        <a href="#shop" class="mt-4 inline-flex flex-col items-center gap-1.5 pb-6 pt-1 text-[13px] text-[#a1a1a6] transition-colors hover:text-white sm:pb-7" @click.prevent="scrollToId('shop')">
           <span>{{ t('xinhuo.hero.scroll') }}</span>
           <ChevronDown class="h-5 w-5" />
         </a>
       </div>
     </section>
+
+    <!-- ==================== 二次元赞助专区入口 ==================== -->
+    <XinhuoAnimeSection />
 
     <!-- ==================== 订单查询 ==================== -->
     <section id="lookup" class="mx-auto max-w-[1200px] scroll-mt-20 px-4 pt-6 sm:px-6 sm:pt-10">
@@ -189,7 +202,7 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Check, ChevronDown, CreditCard, Headphones, Plus, Search, ShieldCheck, Zap } from 'lucide-vue-next'
+import { ArrowRight, Check, ChevronDown, CreditCard, Headphones, Plus, Search, ShieldCheck, Zap } from 'lucide-vue-next'
 import { categoryAPI, postAPI, productAPI } from '../../api'
 import { buildCategoryGroups, type CategoryGroup } from '../../utils/category'
 import { getImageUrl } from '../../utils/image'
@@ -199,6 +212,8 @@ import { useNavConfig } from '../../composables/useNavConfig'
 import { usePageSeo } from '../../composables/usePageSeo'
 import { useAppStore } from '../../stores/app'
 import XinhuoProductCard from './components/XinhuoProductCard.vue'
+import XinhuoAnimeSection from './components/XinhuoAnimeSection.vue'
+import { businessZonePath } from '../../utils/businessLines'
 import { HERO_ICON_BASE, heroTiles } from './heroTiles'
 
 const route = useRoute()
@@ -213,6 +228,7 @@ usePageSeo({ canonicalPath: () => route.path })
 // ==================== 首屏 ====================
 const heroTitle = computed(() => t('xinhuo.hero.title'))
 const heroSubtitle = computed(() => t('xinhuo.hero.subtitle'))
+const aiZoneLink = businessZonePath('ai')
 
 const tiles = heroTiles.map((tile) => ({
   ...tile,

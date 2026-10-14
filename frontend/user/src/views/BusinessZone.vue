@@ -2,7 +2,7 @@
   <div class="zone-page min-h-screen bg-background text-foreground" :class="isAi ? 'zone-ai' : 'zone-game'">
 
     <!-- ==================== AI 专区：深色科技风 ==================== -->
-    <section v-if="isAi" class="relative overflow-hidden bg-slate-950 pt-24 pb-14 text-white md:pb-20">
+    <section v-if="isAi" class="relative overflow-hidden bg-slate-950 pb-14 text-white md:pb-20" :class="heroTopClass">
       <div class="pointer-events-none absolute inset-0 opacity-[0.15]" :style="aiGridStyle"></div>
       <span class="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-violet-600/40 blur-3xl"></span>
       <span class="pointer-events-none absolute -right-20 -top-10 h-80 w-80 rounded-full bg-cyan-500/30 blur-3xl"></span>
@@ -49,7 +49,7 @@
     </section>
 
     <!-- ==================== 二次元专区：明亮活泼风 ==================== -->
-    <section v-else class="relative overflow-hidden bg-linear-to-br from-pink-100 via-rose-50 to-amber-100 pt-24 pb-14 text-slate-900 md:pb-20 dark:from-pink-950/60 dark:via-slate-950 dark:to-amber-950/40 dark:text-white">
+    <section v-else class="relative overflow-hidden bg-linear-to-br from-pink-100 via-rose-50 to-amber-100 pb-14 text-slate-900 md:pb-20 dark:from-pink-950/60 dark:via-slate-950 dark:to-amber-950/40 dark:text-white" :class="heroTopClass">
       <span class="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-pink-300/50 blur-3xl dark:bg-pink-600/30"></span>
       <span class="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-amber-300/50 blur-3xl dark:bg-amber-600/20"></span>
       <Star class="pointer-events-none absolute right-[12%] top-28 h-8 w-8 rotate-12 fill-yellow-300 text-yellow-400" aria-hidden="true" />
@@ -195,6 +195,7 @@ import { categoryAPI, productAPI } from '../api'
 import { getImageUrl } from '../utils/image'
 import { useLocalized } from '../composables/useProduct'
 import { usePageSeo } from '../composables/usePageSeo'
+import { getActiveTemplate } from '../templates/registry'
 import type { PublicCategory } from '../utils/category'
 import { businessZonePath, isBusinessLineKey, resolveBusinessLines, type BusinessLineKey } from '../utils/businessLines'
 import ProductCard from '../components/ProductCard.vue'
@@ -214,6 +215,8 @@ const zoneKey = computed<BusinessLineKey>(() => {
   return isBusinessLineKey(key) ? key : 'ai'
 })
 const isAi = computed(() => zoneKey.value === 'ai')
+// classic 模板导航栏是 fixed，需要让出高度；vault / xinhuo 的导航栏是 sticky，不需要
+const heroTopClass = getActiveTemplate() === 'classic' ? 'pt-24' : 'pt-10 md:pt-14'
 
 // 简易面包屑：首页 › 专区名
 const BreadcrumbLite = defineComponent({
