@@ -4,9 +4,17 @@ on:
   push:
     tags:
       - 'v*'
+    # 推送到 main 时自动打下一个版本号并发布，服务器用 scripts/update.sh 一条命令即可更新
+    branches:
+      - main
 
 permissions:
   contents: write
+
+# 同一时间只跑一个发布，避免两次推送算出相同的版本号
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 jobs:
   goreleaser:
@@ -17,25 +25,54 @@ jobs:
         with:
           fetch-depth: 0
 
+      # 推送到 main：在当前提交上打「上一个 v* 标签的补丁号 + 1」，没有任何标签时从 v1.1.0 开始。
+      # 用 GITHUB_TOKEN 推送的标签不会再次触发本工作流，所以不会重复发布。
+      - name: Auto tag
+        id: tag
+        if: github.ref_type == 'branch'
+        run: |
+          if git describe --tags --exact-match HEAD >/dev/null 2>&1; then
+            echo "当前提交已有标签 $(git describe --tags --exact-match HEAD)，跳过自动发布"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          last=$(git tag -l 'v*' --sort=-v:refname | head -n1)
+          if [ -z "$last" ]; then
+            next=v1.1.0
+          else
+            IFS=. read -r major minor patch <<< "${last#v}"
+            patch=${patch%%[-+]*}
+            next="v${major}.${minor}.$((patch + 1))"
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$next" -m "Release $next"
+          git push origin "$next"
+          echo "已创建标签 $next"
+
       # 前端源码已在本仓库 frontend/ 下，不再需要跨仓库 checkout。
       # 实际的前端构建与嵌入由 .goreleaser.yaml 的 before hooks 完成，
       # 这里只负责把 pnpm / Node 工具链准备好。
       - name: Setup pnpm
+        if: steps.tag.outputs.skip != 'true'
         uses: pnpm/action-setup@v4
         with:
           version: 10.34.3
 
       - name: Setup Node.js
+        if: steps.tag.outputs.skip != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: '24.11.1'
 
       - name: Set up Go
+        if: steps.tag.outputs.skip != 'true'
         uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
 
       - name: Run GoReleaser
+        if: steps.tag.outputs.skip != 'true'
         uses: goreleaser/goreleaser-action@v6
         with:
           distribution: goreleaser
