@@ -155,7 +155,7 @@
         "eyebrow": "Game Top-up",
         "title": "Popular games, easy top-ups",
         "description": "Top up Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more, with fast crediting and great prices.",
-        "cta": "Browse Top-ups",
+        "cta": "Enter Anime Support Zone",
         "hotTitle": "Popular Top-ups",
         "highlight1": "Fast crediting",
         "highlight2": "Great prices",
@@ -1748,5 +1748,30 @@
     "authInvalid": "Credentials mismatch, please try again",
     "authSubmit": "Save and search",
     "authClear": "Clear saved info"
+  },
+  "zone": {
+    "all": "All",
+    "empty": "Products coming soon",
+    "emptyDesc": "We're adding more products to this zone — check back soon",
+    "ai": {
+      "badge": "AI Services Zone",
+      "pickTitle": "Choose a product",
+      "f1Title": "Instant delivery",
+      "f1Desc": "Accounts or keys are sent automatically right after payment, no manual wait.",
+      "f2Title": "Multiple platforms",
+      "f2Desc": "Mainstream AI tools and plans — pick the one that fits you.",
+      "f3Title": "After-sales support",
+      "f3Desc": "Run into an issue? Our support team is here to help."
+    },
+    "game": {
+      "badge": "Anime Support Zone",
+      "pickTitle": "Choose a game",
+      "f1Title": "Fast crediting",
+      "f1Desc": "We process your top-up as quickly as possible after you order.",
+      "f2Title": "Great prices",
+      "f2Desc": "Multiple denominations with transparent pricing before you pay.",
+      "f3Title": "Popular titles covered",
+      "f3Desc": "Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more."
+    }
   }
 }

@@ -5,8 +5,8 @@ import type { PublicCategory } from './category'
  *
  * 每条业务线通过一级分类的 slug 关联到后台分类：在后台把对应一级分类的 slug
  * 设置为 slugs 中的任意一个即可自动关联（推荐 `ai` 与 `game-topup`）。
- * 关联后卡片跳转到该分类页，并展示其子分类标签与热门商品；
- * 未关联时卡片仍然显示，点击跳转到全部商品。
+ * 每条业务线都有独立的专区页 /zone/<key>，首页卡片点击进入专区；
+ * 专区页按关联分类（含子分类）展示商品，未关联分类时显示"即将上线"。
  */
 export type BusinessLineKey = 'ai' | 'game'
 
@@ -27,6 +27,12 @@ export interface ResolvedBusinessLine {
   link: string
 }
 
+export const isBusinessLineKey = (value: unknown): value is BusinessLineKey =>
+  BUSINESS_LINES.some((def) => def.key === value)
+
+export const businessZonePath = (key: BusinessLineKey, childSlug?: string) =>
+  childSlug ? `/zone/${key}?c=${encodeURIComponent(childSlug)}` : `/zone/${key}`
+
 const normalizeSlug = (value: unknown) => String(value ?? '').trim().toLowerCase()
 
 const toPositiveInt = (value: unknown) => {
@@ -37,7 +43,7 @@ const toPositiveInt = (value: unknown) => {
 export const resolveBusinessLines = (
   categories: PublicCategory[],
   definitions: BusinessLineDefinition[] = BUSINESS_LINES,
-  maxChildren = 6,
+  maxChildren = Number.POSITIVE_INFINITY,
 ): ResolvedBusinessLine[] => {
   const list = Array.isArray(categories) ? categories : []
   const roots = list.filter((c) => toPositiveInt(c.parent_id) === 0)
@@ -54,7 +60,6 @@ export const resolveBusinessLines = (
           .filter((c) => toPositiveInt(c.parent_id) === toPositiveInt(category!.id) && c.slug)
           .slice(0, maxChildren)
       : []
-    const link = category?.slug ? `/categories/${encodeURIComponent(String(category.slug))}` : '/products'
-    return { key: def.key, category, children, link }
+    return { key: def.key, category, children, link: businessZonePath(def.key) }
   })
 }

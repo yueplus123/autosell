@@ -39,9 +39,9 @@
               <div class="flex flex-wrap gap-2">
                 <template v-if="line.children.length">
                   <RouterLink
-                    v-for="child in line.children"
+                    v-for="child in line.children.slice(0, MAX_CHIPS)"
                     :key="child.id"
-                    :to="`/categories/${encodeURIComponent(String(child.slug))}`"
+                    :to="businessZonePath(line.key, String(child.slug))"
                     class="rounded-full border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium transition hover:bg-white/25"
                     @click.stop
                   >
@@ -112,7 +112,7 @@ import { ArrowRight, Check, Gamepad2, Sparkles } from 'lucide-vue-next'
 import { categoryAPI, productAPI } from '../api'
 import { useLocalized } from '../composables/useProduct'
 import type { PublicCategory } from '../utils/category'
-import { resolveBusinessLines, type BusinessLineKey } from '../utils/businessLines'
+import { businessZonePath, resolveBusinessLines, type BusinessLineKey } from '../utils/businessLines'
 
 const props = withDefaults(defineProps<{
   showProducts?: boolean
@@ -150,6 +150,7 @@ const THEMES = {
 } as const
 
 const theme = (key: BusinessLineKey) => THEMES[key]
+const MAX_CHIPS = 6
 
 const HIGHLIGHT_COUNT = 3
 const highlights = (key: BusinessLineKey): string[] =>

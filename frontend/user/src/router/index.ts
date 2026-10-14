@@ -138,6 +138,12 @@ const router = createRouter({
             },
         },
         {
+            // 业务专区页：AI 服务 / 二次元赞助，见 utils/businessLines.ts
+            path: '/zone/:key(ai|game)',
+            name: 'business-zone',
+            component: templateView('BusinessZone', () => import('../views/BusinessZone.vue')),
+        },
+        {
             path: '/products/:slug',
             name: 'product-detail',
             component: templateView('ProductDetail', productDetailViewLoader),

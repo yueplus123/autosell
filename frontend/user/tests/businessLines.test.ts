@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { resolveBusinessLines } from '../src/utils/businessLines.ts'
+import { businessZonePath, isBusinessLineKey, resolveBusinessLines } from '../src/utils/businessLines.ts'
 
 const categories = [
   { id: 1, slug: 'AI', parent_id: 0 },
@@ -15,7 +15,8 @@ test('business lines match root categories by slug, case-insensitive', () => {
   const [ai, game] = resolveBusinessLines(categories)
   assert.equal(ai.category?.id, 1)
   assert.deepEqual(ai.children.map((c) => c.id), [2, 3])
-  assert.equal(ai.link, '/categories/AI')
+  assert.equal(ai.link, '/zone/ai')
+  assert.equal(game.link, '/zone/game')
   assert.equal(game.category?.id, 4)
   assert.deepEqual(game.children.map((c) => c.id), [5, 6])
 })
@@ -25,13 +26,13 @@ test('business lines ignore child categories with a matching slug', () => {
   assert.equal(ai.category, null)
 })
 
-test('unmatched business line falls back to all products', () => {
+test('unmatched business line still links to its own zone', () => {
   const lines = resolveBusinessLines([])
   assert.equal(lines.length, 2)
   for (const line of lines) {
     assert.equal(line.category, null)
     assert.deepEqual(line.children, [])
-    assert.equal(line.link, '/products')
+    assert.equal(line.link, `/zone/${line.key}`)
   }
 })
 
@@ -40,4 +41,10 @@ test('children are capped', () => {
   for (let i = 0; i < 10; i++) many.push({ id: 10 + i, slug: `c${i}`, parent_id: 1 })
   const [ai] = resolveBusinessLines(many, undefined, 4)
   assert.equal(ai.children.length, 4)
+})
+
+test('zone helpers', () => {
+  assert.equal(businessZonePath('game', '原神'), '/zone/game?c=%E5%8E%9F%E7%A5%9E')
+  assert.equal(isBusinessLineKey('ai'), true)
+  assert.equal(isBusinessLineKey('other'), false)
 })
