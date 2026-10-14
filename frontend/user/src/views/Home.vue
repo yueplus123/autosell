@@ -1,10 +1,23 @@
 <template>
   <div class="home-page min-h-screen bg-background text-foreground">
 
+    <!-- ==================== 业务主视觉（AI + 二次元，仅首页，位于最顶部） ==================== -->
+    <BusinessShowcase v-if="showBusinessShowcase" :show-products="templateMode !== 'list'">
+      <template #product="{ product, index }">
+        <ProductCard
+          :product="product"
+          :index="index"
+          :animation-step="60"
+          @click="goToProduct"
+          @quick-buy="openQuickBuy"
+        />
+      </template>
+    </BusinessShowcase>
+
     <!-- ==================== LIST MODE ==================== -->
     <template v-if="templateMode === 'list'">
       <!-- Hero Banner (shared with card mode) -->
-      <section v-if="showHeroSection" class="relative z-10 border-b pt-24 pb-10">
+      <section v-if="showHeroSection" class="relative z-10 border-b pb-10" :class="showBusinessShowcase ? 'pt-10' : 'pt-24'">
         <div class="container mx-auto px-4">
           <div class="relative overflow-hidden rounded-2xl border bg-card"
             @touchstart="onBannerTouchStart"
@@ -56,13 +69,8 @@
         </div>
       </section>
 
-      <!-- 双业务入口（仅首页） -->
-      <div v-if="showBusinessShowcase" :class="showHeroSection ? '' : 'pt-14 md:pt-16'">
-        <BusinessShowcase />
-      </div>
-
       <!-- Main: Left Categories + Right Product List -->
-      <section class="relative z-10 pb-6" :class="showHeroSection || showBusinessShowcase ? 'pt-6' : 'pt-24'">
+      <section class="relative z-10 pb-6" :class="showHeroSection ? 'pt-6' : showBusinessShowcase ? 'pt-10' : 'pt-24'">
         <div class="container mx-auto px-4">
           <div class="flex flex-col lg:flex-row gap-6">
 
@@ -168,7 +176,7 @@
 
     <!-- ==================== CARD MODE (default) ==================== -->
     <template v-else>
-    <section v-if="showHeroSection" class="relative z-10 border-b pt-24 pb-10">
+    <section v-if="showHeroSection" class="relative z-10 border-b pb-10" :class="showBusinessShowcase ? 'pt-10' : 'pt-24'">
       <div class="container mx-auto px-4">
         <div class="relative overflow-hidden rounded-2xl border bg-card"
           @touchstart="onBannerTouchStart"
@@ -265,22 +273,7 @@
       </div>
     </section>
 
-    <!-- 双业务入口 + 各业务热门商品 -->
-    <div v-if="showBusinessShowcase" :class="showHeroSection ? '' : 'pt-14 md:pt-16'">
-      <BusinessShowcase show-products>
-        <template #product="{ product, index }">
-          <ProductCard
-            :product="product"
-            :index="index"
-            :animation-step="60"
-            @click="goToProduct"
-            @quick-buy="openQuickBuy"
-          />
-        </template>
-      </BusinessShowcase>
-    </div>
-
-    <section id="featured" class="relative z-10 pb-14" :class="showBusinessShowcase ? 'pt-8' : showHeroSection ? 'pt-14' : 'pt-32 md:pt-36'">
+    <section id="featured" class="relative z-10 pb-14" :class="showHeroSection || showBusinessShowcase ? 'pt-14' : 'pt-32 md:pt-36'">
       <div class="container mx-auto px-4">
         <div class="mb-8 flex items-end justify-between gap-4">
           <div>

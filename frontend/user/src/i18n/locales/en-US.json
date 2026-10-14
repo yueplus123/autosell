@@ -143,6 +143,7 @@
       "description": "AI tools and anime game top-ups, all in one place",
       "ai": {
         "eyebrow": "AI Services",
+        "heroTitle": "Every AI plan, right here.",
         "title": "Top AI tools, ready to use",
         "description": "Accounts and credits for ChatGPT, Claude, Midjourney and more, delivered automatically right after checkout.",
         "cta": "Browse AI",
@@ -152,7 +153,7 @@
         "highlight3": "After-sales support"
       },
       "game": {
-        "eyebrow": "Game Top-up",
+        "eyebrow": "Anime Support",
         "title": "Popular games, easy top-ups",
         "description": "Top up Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more, with fast crediting and great prices.",
         "cta": "Enter Anime Support Zone",

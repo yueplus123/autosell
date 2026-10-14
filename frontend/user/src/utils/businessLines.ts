@@ -63,3 +63,24 @@ export const resolveBusinessLines = (
     return { key: def.key, category, children, link: businessZonePath(def.key) }
   })
 }
+
+export interface HeroTile {
+  /** 关联的子分类；为 null 时用占位图标 */
+  category: PublicCategory | null
+  /** 占位图标序号（仅 category 为空或没有上传图标时使用） */
+  fallbackIndex: number
+}
+
+/**
+ * 生成首页 AI 主视觉的图标方块：优先使用上传了图标的子分类，其次是没有图标的子分类，
+ * 不足 count 个时用占位图标补齐。第 0 个放在正中间（最大的方块）。
+ */
+export const buildHeroTiles = (children: PublicCategory[], count = 7): HeroTile[] => {
+  const list = Array.isArray(children) ? children : []
+  const withIcon = list.filter((c) => typeof c.icon === 'string' && c.icon.trim() !== '')
+  const withoutIcon = list.filter((c) => !(typeof c.icon === 'string' && c.icon.trim() !== ''))
+  const ordered = [...withIcon, ...withoutIcon].slice(0, count)
+  const tiles: HeroTile[] = ordered.map((category, i) => ({ category, fallbackIndex: i }))
+  for (let i = tiles.length; i < count; i++) tiles.push({ category: null, fallbackIndex: i })
+  return tiles
+}

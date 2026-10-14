@@ -143,6 +143,7 @@
       "description": "AI 工具与二次元游戏代充，一站搞定",
       "ai": {
         "eyebrow": "AI 服务",
+        "heroTitle": "AI 会员，全在这。",
         "title": "主流 AI，即买即用",
         "description": "ChatGPT、Claude、Midjourney 等热门 AI 账号与额度，下单自动发货，开箱即用。",
         "cta": "进入 AI 专区",
@@ -152,7 +153,7 @@
         "highlight3": "售后保障"
       },
       "game": {
-        "eyebrow": "二次元代充",
+        "eyebrow": "二次元赞助",
         "title": "热门手游，放心代充",
         "description": "原神、崩坏：星穹铁道、绝区零等热门游戏，充值到账快，价格更实惠。",
         "cta": "进入二次元赞助专区",

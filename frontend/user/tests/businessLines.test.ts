@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { businessZonePath, isBusinessLineKey, resolveBusinessLines } from '../src/utils/businessLines.ts'
+import { buildHeroTiles, businessZonePath, isBusinessLineKey, resolveBusinessLines } from '../src/utils/businessLines.ts'
 
 const categories = [
   { id: 1, slug: 'AI', parent_id: 0 },
@@ -47,4 +47,20 @@ test('zone helpers', () => {
   assert.equal(businessZonePath('game', '原神'), '/zone/game?c=%E5%8E%9F%E7%A5%9E')
   assert.equal(isBusinessLineKey('ai'), true)
   assert.equal(isBusinessLineKey('other'), false)
+})
+
+test('hero tiles prefer categories with icons and pad with placeholders', () => {
+  const tiles = buildHeroTiles([
+    { id: 1, slug: 'a' },
+    { id: 2, slug: 'b', icon: '/uploads/b.png' },
+    { id: 3, slug: 'c', icon: '  ' },
+  ], 5)
+  assert.deepEqual(tiles.map((t) => t.category?.id ?? null), [2, 1, 3, null, null])
+  assert.deepEqual(tiles.map((t) => t.fallbackIndex), [0, 1, 2, 3, 4])
+})
+
+test('hero tiles cap at count', () => {
+  const many = Array.from({ length: 10 }, (_, i) => ({ id: i + 1, slug: `s${i}` }))
+  assert.equal(buildHeroTiles(many, 7).length, 7)
+  assert.equal(buildHeroTiles([], 7).every((t) => t.category === null), true)
 })

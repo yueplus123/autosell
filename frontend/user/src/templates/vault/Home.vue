@@ -1,11 +1,23 @@
 <template>
   <div>
+    <!-- 业务主视觉（AI + 二次元，仅首页，位于最顶部） -->
+    <BusinessShowcase
+      v-if="showBusinessShowcase"
+      :show-products="!isListMode"
+      container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold"
+      hero-top-class="pt-16 md:pt-20"
+      product-grid-class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]"
+    >
+      <template #product="{ product, index }">
+        <VaultProductCard :product="product" :index="index" @quick-buy="openQuickBuy" />
+      </template>
+    </BusinessShowcase>
+
     <!-- 站长配置的横幅轮播（两种模式共用，顶部展示） -->
     <VaultBannerHero />
 
     <!-- ==================== 列表模式 ==================== -->
     <template v-if="isListMode">
-      <BusinessShowcase v-if="showBusinessShowcase" container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold" />
       <section class="mx-auto w-full max-w-[1180px] px-4 py-6 sm:px-6">
         <div class="grid items-start gap-5 lg:grid-cols-[248px_1fr] lg:gap-7">
           <VaultCategorySidebar
@@ -80,18 +92,6 @@
 
     <!-- ==================== 卡片模式（默认） ==================== -->
     <template v-else>
-      <!-- 双业务入口 + 各业务热门商品 -->
-      <BusinessShowcase
-        v-if="showBusinessShowcase"
-        show-products
-        container-class="mx-auto w-full max-w-[1180px] px-4 sm:px-6" heading-class="text-[28px] font-extrabold"
-        product-grid-class="grid gap-4 grid-cols-[repeat(auto-fill,minmax(228px,1fr))]"
-      >
-        <template #product="{ product, index }">
-          <VaultProductCard :product="product" :index="index" @quick-buy="openQuickBuy" />
-        </template>
-      </BusinessShowcase>
-
       <!-- 分类块 -->
       <section v-if="topCategories.length" class="mx-auto w-full max-w-[1180px] px-4 py-9 sm:px-6">
         <div class="mb-[22px] flex flex-wrap items-end justify-between gap-4">
