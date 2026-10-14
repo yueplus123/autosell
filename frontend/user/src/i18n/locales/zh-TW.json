@@ -148,16 +148,16 @@
         "description": "ChatGPT、Claude、Midjourney 等熱門 AI 帳號與額度，下單自動發貨，開箱即用。",
         "cta": "進入 AI 專區",
         "hotTitle": "AI 服務 · 熱門",
-        "highlight1": "自動發貨",
-        "highlight2": "多平台可選",
-        "highlight3": "售後保障"
+        "highlight1": "官方渠道",
+        "highlight2": "自動發貨",
+        "highlight3": "售後質保"
       },
       "game": {
         "eyebrow": "二次元贊助",
-        "title": "熱門手遊，放心代儲",
+        "title": "二次元同人 省心贊助",
         "description": "原神、崩壞：星穹鐵道、絕區零等熱門遊戲，儲值到帳快，價格更實惠。",
         "cta": "進入二次元贊助專區",
-        "hotTitle": "二次元代儲 · 熱門",
+        "hotTitle": "二次元贊助 · 熱門",
         "highlight1": "極速到帳",
         "highlight2": "價格實惠",
         "highlight3": "熱門遊戲全覆蓋"
@@ -1761,7 +1761,7 @@
       "f1Desc": "下單付款後系統自動發送帳號或卡密，無需等待人工處理。",
       "f2Title": "多平台可選",
       "f2Desc": "涵蓋主流 AI 工具與多種方案，依需求選擇最合適的方案。",
-      "f3Title": "售後保障",
+      "f3Title": "售後質保",
       "f3Desc": "使用過程中遇到問題，隨時聯繫客服協助處理。"
     },
     "game": {

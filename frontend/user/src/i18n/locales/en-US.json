@@ -148,16 +148,16 @@
         "description": "Accounts and credits for ChatGPT, Claude, Midjourney and more, delivered automatically right after checkout.",
         "cta": "Browse AI",
         "hotTitle": "Popular in AI",
-        "highlight1": "Instant delivery",
-        "highlight2": "Multiple platforms",
-        "highlight3": "After-sales support"
+        "highlight1": "Official channels",
+        "highlight2": "Instant delivery",
+        "highlight3": "Warranty support"
       },
       "game": {
         "eyebrow": "Anime Support",
-        "title": "Popular games, easy top-ups",
+        "title": "Anime fan support, hassle-free",
         "description": "Top up Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more, with fast crediting and great prices.",
         "cta": "Enter Anime Support Zone",
-        "hotTitle": "Popular Top-ups",
+        "hotTitle": "Popular in Anime Support",
         "highlight1": "Fast crediting",
         "highlight2": "Great prices",
         "highlight3": "Popular titles covered"
@@ -1761,7 +1761,7 @@
       "f1Desc": "Accounts or keys are sent automatically right after payment, no manual wait.",
       "f2Title": "Multiple platforms",
       "f2Desc": "Mainstream AI tools and plans — pick the one that fits you.",
-      "f3Title": "After-sales support",
+      "f3Title": "Warranty support",
       "f3Desc": "Run into an issue? Our support team is here to help."
     },
     "game": {

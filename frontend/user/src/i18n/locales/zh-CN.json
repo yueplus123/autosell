@@ -148,16 +148,16 @@
         "description": "ChatGPT、Claude、Midjourney 等热门 AI 账号与额度，下单自动发货，开箱即用。",
         "cta": "进入 AI 专区",
         "hotTitle": "AI 服务 · 热门",
-        "highlight1": "自动发货",
-        "highlight2": "多平台可选",
-        "highlight3": "售后保障"
+        "highlight1": "官方渠道",
+        "highlight2": "自动发货",
+        "highlight3": "售后质保"
       },
       "game": {
         "eyebrow": "二次元赞助",
-        "title": "热门手游，放心代充",
+        "title": "二次元同人 省心赞助",
         "description": "原神、崩坏：星穹铁道、绝区零等热门游戏，充值到账快，价格更实惠。",
         "cta": "进入二次元赞助专区",
-        "hotTitle": "二次元代充 · 热门",
+        "hotTitle": "二次元赞助 · 热门",
         "highlight1": "极速到账",
         "highlight2": "价格实惠",
         "highlight3": "热门游戏全覆盖"
@@ -1761,7 +1761,7 @@
       "f1Desc": "下单付款后系统自动发送账号或卡密，无需等待人工处理。",
       "f2Title": "多平台可选",
       "f2Desc": "覆盖主流 AI 工具与多种套餐，按需选择最合适的方案。",
-      "f3Title": "售后保障",
+      "f3Title": "售后质保",
       "f3Desc": "使用过程中遇到问题，随时联系客服协助处理。"
     },
     "game": {
