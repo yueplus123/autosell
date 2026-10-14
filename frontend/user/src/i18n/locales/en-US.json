@@ -1724,5 +1724,138 @@
     "authInvalid": "Credentials mismatch, please try again",
     "authSubmit": "Save and search",
     "authClear": "Clear saved info"
+  },
+  "xinhuo": {
+    "announcementTag": "Notice",
+    "viewDetails": "Details",
+    "hero": {
+      "title": "Every membership, right here.",
+      "subtitle": "Official channels · Instant delivery · After-sales warranty",
+      "scroll": "Browse products"
+    },
+    "lookup": {
+      "title": "Find your order and codes",
+      "desc": "No account needed. Enter the email and order password you used at checkout.",
+      "email": "Order email",
+      "password": "Order password",
+      "submit": "Search",
+      "missing": "Enter your email and order password"
+    },
+    "shop": {
+      "title": "Popular products.",
+      "desc": "Delivered automatically after payment, straight to your order page and inbox.",
+      "search": "Search memberships, game cards, top-ups",
+      "all": "All",
+      "buy": "Buy",
+      "soldOut": "Sold out",
+      "viewAll": "View all products",
+      "empty": "No products yet",
+      "emptySearch": "No matching products"
+    },
+    "why": {
+      "title": "Why Xinhuo Cards.",
+      "items": [
+        {
+          "title": "Instant delivery",
+          "desc": "Codes are issued the moment payment clears, no manual wait."
+        },
+        {
+          "title": "After-sales warranty",
+          "desc": "Problems within the warranty period are covered, per each product page."
+        },
+        {
+          "title": "Flexible payment",
+          "desc": "Several online payment methods, and checkout works without an account."
+        },
+        {
+          "title": "Live support",
+          "desc": "Quick replies on order issues and help using what you bought."
+        }
+      ]
+    },
+    "steps": {
+      "title": "Three steps to buy.",
+      "items": [
+        {
+          "title": "Pick a product",
+          "desc": "Choose a membership or card, then the plan and quantity"
+        },
+        {
+          "title": "Pay online",
+          "desc": "Enter your email and pay with your preferred method"
+        },
+        {
+          "title": "Get it instantly",
+          "desc": "Codes appear right away and are emailed to you"
+        }
+      ]
+    },
+    "about": {
+      "eyebrow": "About us",
+      "title": "Focused on digital memberships and game cards",
+      "desc": "Xinhuo Cards supplies popular memberships, AI tool subscriptions and game cards to individuals and teams, with automatic delivery and traceable after-sales support.",
+      "more": "Learn more"
+    },
+    "posts": {
+      "title": "Latest articles.",
+      "all": "All articles"
+    },
+    "faq": {
+      "title": "Questions.",
+      "items": [
+        {
+          "q": "How soon will I get my code?",
+          "a": "Delivery is automatic. Codes usually show on the order page within seconds and are emailed to you."
+        },
+        {
+          "q": "Can I buy without an account?",
+          "a": "Yes. Enter an email and set an order password at checkout, then use them to look up your order later."
+        },
+        {
+          "q": "What if a code doesn't work?",
+          "a": "Contact support within the warranty period with your order number and we'll handle it per the product's after-sales rules."
+        },
+        {
+          "q": "Which payment methods are supported?",
+          "a": "Available payment methods are shown at checkout."
+        }
+      ]
+    },
+    "notice": {
+      "title": "Before you buy",
+      "items": [
+        "Product source and top-up method are described on each product page. Please read it before ordering.",
+        "Products that fail for reasons of their own within the warranty period can be replaced or refunded. Issues caused by changing account details or misuse are not covered.",
+        "Limits for account products, such as shared or private use, device count and region, are listed on the product page.",
+        "Auto-delivery products show codes right after payment. Direct top-up timing is listed on the product page.",
+        "Delivery is complete once a code is issued. Refunds follow the terms of service.",
+        "This site is not affiliated with the platforms whose products it sells. Product names and trademarks belong to their owners. The price at checkout is final."
+      ],
+      "more": "Full terms:",
+      "terms": "Terms of service",
+      "and": "and",
+      "privacy": "Privacy policy"
+    },
+    "footer": {
+      "tagline": "Popular memberships, AI tools and game cards. Instant delivery, traceable support.",
+      "shop": "Shop",
+      "service": "Service",
+      "company": "Company",
+      "allProducts": "All products",
+      "orderLookup": "Order lookup",
+      "about": "About us",
+      "blog": "Articles",
+      "notice": "Notices",
+      "terms": "Terms of service",
+      "privacy": "Privacy policy"
+    },
+    "nav": {
+      "shop": "Shop",
+      "orderLookup": "Order lookup",
+      "menu": "Open menu",
+      "close": "Close menu",
+      "register": "Sign up"
+    },
+    "close": "Close"
   }
 }
