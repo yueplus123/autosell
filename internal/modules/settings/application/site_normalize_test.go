@@ -113,6 +113,8 @@ func TestUpdateSiteSettingNormalized(t *testing.T) {
 		"contact": map[string]interface{}{
 			"telegram": "  https://t.me/demo  ",
 			"whatsapp": 123,
+			"wechat":   "  xinhuo_kefu  ",
+			"qq":       "  10001  ",
 		},
 		"seo": map[string]interface{}{
 			"title": map[string]interface{}{
@@ -233,6 +235,9 @@ func TestUpdateSiteSettingNormalized(t *testing.T) {
 	}
 	if contact["whatsapp"] != "" {
 		t.Fatalf("unexpected whatsapp: %v", contact["whatsapp"])
+	}
+	if contact["wechat"] != "xinhuo_kefu" || contact["qq"] != "10001" {
+		t.Fatalf("unexpected wechat/qq: %v / %v", contact["wechat"], contact["qq"])
 	}
 
 	seo, ok := result["seo"].(map[string]interface{})

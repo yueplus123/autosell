@@ -20,11 +20,102 @@ body.xinhuo-tokens {
 /* ==================== 首屏 ==================== */
 
 .xh-hero {
+  position: relative;
+  isolation: isolate;
   background:
-    radial-gradient(ellipse at 18% 88%, rgba(37, 99, 235, 0.28), transparent 42%),
-    radial-gradient(ellipse at 62% 92%, rgba(234, 88, 12, 0.22), transparent 38%),
-    radial-gradient(ellipse at 94% 78%, rgba(22, 163, 74, 0.24), transparent 34%),
+    radial-gradient(ellipse at 18% 88%, rgba(37, 99, 235, 0.32), transparent 42%),
+    radial-gradient(ellipse at 50% 100%, rgba(34, 211, 238, 0.16), transparent 40%),
+    radial-gradient(ellipse at 82% 86%, rgba(217, 70, 239, 0.26), transparent 38%),
     #000;
+}
+
+/* 科技风：透视网格地面 + 细网格 + 扫描光 */
+.xh-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(148, 163, 184, 0.13) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148, 163, 184, 0.13) 1px, transparent 1px);
+  background-size: 48px 48px;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 35%, #000 25%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 50% 35%, #000 25%, transparent 72%);
+}
+
+.xh-hero::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  right: -10%;
+  bottom: 0;
+  height: 46%;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(34, 211, 238, 0.28) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.28) 1px, transparent 1px);
+  background-size: 64px 40px;
+  transform: perspective(420px) rotateX(62deg);
+  transform-origin: bottom;
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 85%);
+}
+
+.xh-scan {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.xh-scan::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, rgba(34, 211, 238, 0.08), transparent);
+  animation: xh-scan 7s linear infinite;
+}
+
+@keyframes xh-scan {
+  from { transform: translateY(-120px); }
+  to { transform: translateY(110vh); }
+}
+
+/* 渐变描边标题 */
+.xh-hero-title {
+  background: linear-gradient(180deg, #ffffff 30%, #a5f3fc 75%, #c4b5fd);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 0 40px rgba(34, 211, 238, 0.12);
+}
+
+/* 砖块轻微悬浮 */
+.xh-tile--front {
+  animation: xh-bob 6s ease-in-out infinite;
+}
+.xh-tile--front:nth-child(2n) {
+  animation-delay: -2s;
+}
+.xh-tile--front:nth-child(3n) {
+  animation-delay: -4s;
+}
+
+@keyframes xh-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -6px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xh-scan::before,
+  .xh-tile--front {
+    animation: none;
+  }
 }
 
 /* 图标墙：容器按比例缩放，砖块位置 / 尺寸都用百分比，桌面与手机各一套坐标（见 heroTiles 配置） */
@@ -75,6 +166,16 @@ body.xinhuo-tokens {
     0 28px 56px rgba(0, 0, 0, 0.75),
     0 0 50px var(--glow, rgba(255, 255, 255, 0.08)),
     inset 0 2px 0 rgba(255, 255, 255, 0.22);
+}
+
+.xh-tile--anime {
+  background: linear-gradient(135deg, #8b5cf6, #ec4899 55%, #fb923c);
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
+  box-shadow:
+    0 24px 44px rgba(0, 0, 0, 0.6),
+    0 0 50px var(--glow, rgba(236, 72, 153, 0.35)),
+    inset 0 2px 0 rgba(255, 255, 255, 0.45),
+    inset 0 -6px 14px rgba(0, 0, 0, 0.15);
 }
 
 /* 黑色线稿 logo 放在暗色砖块上时反白 */

@@ -2999,6 +2999,10 @@ const messages = {
           telegramPlaceholder: 'https://telegram.me/...',
           whatsapp: 'WhatsApp 链接',
           whatsappPlaceholder: 'https://wa.me/...',
+          wechat: '微信号',
+          wechatPlaceholder: '前台「快速响应」弹窗中展示',
+          qq: 'QQ 号',
+          qqPlaceholder: '前台「快速响应」弹窗中展示',
         },
         footerLinks: {
           title: '页脚自定义链接',
@@ -7448,6 +7452,10 @@ const messages = {
           telegramPlaceholder: 'https://telegram.me/...',
           whatsapp: 'WhatsApp 連結',
           whatsappPlaceholder: 'https://wa.me/...',
+          wechat: '微信號',
+          wechatPlaceholder: '前台「快速響應」彈窗中展示',
+          qq: 'QQ 號',
+          qqPlaceholder: '前台「快速響應」彈窗中展示',
         },
         footerLinks: {
           title: '頁尾自訂連結',
@@ -11897,6 +11905,10 @@ const messages = {
           telegramPlaceholder: 'https://telegram.me/...',
           whatsapp: 'WhatsApp',
           whatsappPlaceholder: 'https://wa.me/...',
+          wechat: 'WeChat ID',
+          wechatPlaceholder: 'Shown in the storefront contact dialog',
+          qq: 'QQ number',
+          qqPlaceholder: 'Shown in the storefront contact dialog',
         },
         footerLinks: {
           title: 'Custom Footer Links',

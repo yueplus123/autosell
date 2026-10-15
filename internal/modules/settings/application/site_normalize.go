@@ -128,13 +128,16 @@ func normalizeSiteContact(raw interface{}) map[string]interface{} {
 	result := map[string]interface{}{
 		"telegram": "",
 		"whatsapp": "",
+		"wechat":   "",
+		"qq":       "",
 	}
 	contactMap, ok := raw.(map[string]interface{})
 	if !ok {
 		return result
 	}
-	result["telegram"] = normalizeSettingText(contactMap["telegram"])
-	result["whatsapp"] = normalizeSettingText(contactMap["whatsapp"])
+	for key := range result {
+		result[key] = normalizeSettingText(contactMap[key])
+	}
 	return result
 }
 

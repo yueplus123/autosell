@@ -1779,7 +1779,7 @@
     "announcementTag": "公告",
     "viewDetails": "查看詳情",
     "hero": {
-      "title": "會員，全在這。",
+      "title": "AI會員，全在這。",
       "subtitle": "官方管道 · 自動發貨 · 售後質保",
       "scroll": "瀏覽商品"
     },
@@ -1803,23 +1803,25 @@
       "emptySearch": "沒有找到相關商品"
     },
     "why": {
-      "title": "為什麼選薪火數卡。",
+      "title": "為什麼在{brand}購買。",
+      "subtitle": "買得放心，用得省心。",
       "items": [
         {
-          "title": "秒級自動發貨",
-          "desc": "支付成功即刻發卡，無需等待人工處理。"
+          "title": "官方渠道儲值",
+          "desc": "ChatGPT、Claude、Grok 等走官方渠道儲值，填入帳號即可開通。"
         },
         {
-          "title": "售後質保",
-          "desc": "質保期內出現問題可申請售後，具體以商品頁說明為準。"
+          "title": "付款即發貨",
+          "desc": "付款完成後卡密立即交付，訂單與卡密隨時可查。"
         },
         {
-          "title": "多種支付方式",
-          "desc": "支援多種線上支付，免註冊也可直接下單。"
+          "title": "質保有保障",
+          "desc": "訂閱類商品質保 1 個月，掉訂閱按剩餘天數退差價。"
         },
         {
-          "title": "線上客服",
-          "desc": "訂單問題快速回應，幫你解決使用中的疑問。"
+          "title": "快速響應",
+          "desc": "微信、QQ、Telegram 多管道在線，售前售後及時回覆。",
+          "contact": "1"
         }
       ]
     },
@@ -1906,6 +1908,41 @@
       "close": "關閉選單",
       "register": "註冊"
     },
-    "close": "關閉"
+    "close": "關閉",
+    "contact": {
+      "title": "聯絡我們",
+      "desc": "售前售後都可以找我們，工作時間內及時回覆。",
+      "open": "查看聯絡方式",
+      "wechat": "微信",
+      "copy": "複製",
+      "copied": "已複製",
+      "go": "開啟",
+      "empty": "客服聯絡方式尚未設定，請稍後再試。"
+    },
+    "modules": {
+      "buy": "立即購買",
+      "chatgpt": {
+        "title": "ChatGPT Plus 官方儲值",
+        "desc": "官方渠道儲值，填入帳號即可開通。",
+        "sub": "官方儲值"
+      },
+      "global": {
+        "title": "海外帳號 · 禮品卡",
+        "apple": "海外 Apple ID + 禮品卡",
+        "appleSub": "海外區 Apple ID 與 App Store 禮品卡",
+        "card": "Visa / 萬事達",
+        "cardSub": "海外訂閱付款可用的 Visa、萬事達卡"
+      },
+      "more": {
+        "title": "更多會員",
+        "grok": "Grok",
+        "gemini": "Gemini",
+        "member": "會員",
+        "card": "Visa",
+        "cardSub": "萬事達",
+        "gmail": "Gmail",
+        "gmailSub": "信箱"
+      }
+    }
   }
 }

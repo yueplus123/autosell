@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background text-foreground pt-24 pb-16">
+  <div class="min-h-screen bg-background text-foreground pb-16" :class="topPaddingClass">
     <div class="container mx-auto px-4">
       <div class="mb-8">
         <h1 class="text-3xl font-black text-foreground mb-2 flex items-center gap-3">
@@ -97,6 +97,10 @@ import { Input } from '@/components/ui/input'
 import EmptyState from '../components/EmptyState.vue'
 import PaginationNav from '../components/PaginationNav.vue'
 import { useGuestOrders } from '../composables/useGuestOrders'
+import { getActiveTemplate } from '../templates/registry'
+
+// classic 导航栏是 fixed，需要让出高度；vault / xinhuo 的导航栏是 sticky
+const topPaddingClass = getActiveTemplate() === 'classic' ? 'pt-24' : 'pt-10'
 
 const { t } = useI18n()
 

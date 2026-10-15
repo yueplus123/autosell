@@ -26,12 +26,9 @@
           <span class="truncate">{{ brandName }}</span>
         </RouterLink>
 
+        <!-- 顶栏只保留「订单查询」 -->
         <nav class="ml-4 flex items-center gap-7 text-sm max-[900px]:hidden">
-          <template v-for="item in menuItems" :key="item.key">
-            <RouterLink v-if="item.type === 'route'" :to="item.path" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white" exact-active-class="!text-white">{{ item.label }}</RouterLink>
-            <a v-else :href="item.path" :target="item.target" rel="noopener noreferrer" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white">{{ item.label }}</a>
-          </template>
-          <RouterLink :to="lookupTarget" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
+          <RouterLink :to="lookupTarget" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white" active-class="!text-white">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
         </nav>
 
         <div class="ml-auto flex items-center gap-1 sm:gap-2">
@@ -68,10 +65,6 @@
               <Menu v-else class="pointer-events-none h-[22px] w-[22px]" />
             </button>
             <div v-if="moreOpen" class="absolute right-0 top-[calc(100%+8px)] z-[60] flex w-[220px] flex-col gap-0.5 rounded-xl border border-[#2a2a2e] bg-[#161618] p-1.5 shadow-2xl">
-              <template v-for="item in menuItems" :key="`m-${item.key}`">
-                <RouterLink v-if="item.type === 'route'" :to="item.path" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ item.label }}</RouterLink>
-                <a v-else :href="item.path" :target="item.target" rel="noopener noreferrer" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ item.label }}</a>
-              </template>
               <RouterLink :to="lookupTarget" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
               <div class="my-1 h-px bg-[#2a2a2e]"></div>
               <RouterLink v-if="userAuthStore.isAuthenticated" to="/me" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('navbar.personalCenter') }}</RouterLink>
@@ -135,11 +128,11 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Check, Flame, Globe, LayoutGrid, LogOut, Menu, ShoppingBag, X } from 'lucide-vue-next'
+import { Check, Flame, Globe, LogOut, Menu, ShoppingBag, X } from 'lucide-vue-next'
 import { useAppStore } from '../../../stores/app'
 import { useCartStore } from '../../../stores/cart'
 import { useUserAuthStore } from '../../../stores/userAuth'
-import { useNavConfig, type NavItem } from '../../../composables/useNavConfig'
+import { useNavConfig } from '../../../composables/useNavConfig'
 import { getImageUrl } from '../../../utils/image'
 import { getLocalizedText } from '../../../utils/resellerSiteConfig'
 import '../styles/xinhuo.css'
@@ -166,19 +159,10 @@ const brandDescription = computed(() => {
   return ''
 })
 
-const { isListMode, blogEnabled, noticeEnabled, aboutEnabled, secondaryNavItems } = useNavConfig()
+const { blogEnabled, noticeEnabled, aboutEnabled } = useNavConfig()
 
-const menuItems = computed<NavItem[]>(() => {
-  const items: NavItem[] = []
-  if (!isListMode.value) {
-    items.push({ key: 'products', path: '/products', label: t('xinhuo.nav.shop'), icon: LayoutGrid, type: 'route', target: '_self' })
-  }
-  items.push(...secondaryNavItems.value)
-  return items
-})
-
-// 首页有查询卡片，其他页面直接进游客订单页
-const lookupTarget = { path: '/', hash: '#lookup' }
+// 订单查询是独立页面（游客凭邮箱 + 订单密码查询，登录用户可在个人中心查看）
+const lookupTarget = '/guest/orders'
 
 const footerLinks = computed(() => {
   const links = appStore.config?.footer_links

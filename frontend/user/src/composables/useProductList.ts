@@ -193,6 +193,11 @@ export function useProductList(options: UseProductListOptions = {}) {
   )
 
   const initialize = async () => {
+    // 支持从外部链接带入搜索词：/products?search=ChatGPT
+    const searchParam = route.query.search
+    if (typeof searchParam === 'string' && searchParam.trim()) {
+      searchQuery.value = searchParam.trim()
+    }
     await loadCategories()
     if (syncSelectedCategoryFromRoute()) {
       syncExpandedCategoryState()

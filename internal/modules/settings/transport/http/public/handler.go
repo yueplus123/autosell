@@ -129,9 +129,12 @@ func (h *Handler) GetConfig(c *gin.Context) {
 		"languages":                              append([]string(nil), constants.SupportedLocales...),
 		constants.SettingFieldSiteCurrency:       constants.SiteCurrencyDefault,
 		constants.SettingFieldStorefrontTemplate: constants.StorefrontTemplateDefault,
+		// 未配置时不展示任何联系方式，避免前台出现示例链接
 		"contact": map[string]interface{}{
-			"telegram": "https://telegram.me/dujiaoka",
-			"whatsapp": "https://wa.me/1234567890",
+			"telegram": "",
+			"whatsapp": "",
+			"wechat":   "",
+			"qq":       "",
 		},
 		"scripts": make([]interface{}, 0),
 	}

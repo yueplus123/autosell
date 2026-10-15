@@ -1779,7 +1779,7 @@
     "announcementTag": "Notice",
     "viewDetails": "Details",
     "hero": {
-      "title": "Every membership, right here.",
+      "title": "Every AI plan, right here.",
       "subtitle": "Official channels · Instant delivery · After-sales warranty",
       "scroll": "Browse products"
     },
@@ -1803,23 +1803,25 @@
       "emptySearch": "No matching products"
     },
     "why": {
-      "title": "Why Xinhuo Cards.",
+      "title": "Why buy at {brand}.",
+      "subtitle": "Buy with confidence, use with ease.",
       "items": [
         {
+          "title": "Official top-ups",
+          "desc": "ChatGPT, Claude, Grok and more are topped up through official channels — just enter your account."
+        },
+        {
           "title": "Instant delivery",
-          "desc": "Codes are issued the moment payment clears, no manual wait."
+          "desc": "Keys are delivered as soon as payment completes, and your orders stay available to look up."
         },
         {
-          "title": "After-sales warranty",
-          "desc": "Problems within the warranty period are covered, per each product page."
+          "title": "Warranty included",
+          "desc": "Subscriptions carry a 1-month warranty; if a subscription drops, we refund the remaining days."
         },
         {
-          "title": "Flexible payment",
-          "desc": "Several online payment methods, and checkout works without an account."
-        },
-        {
-          "title": "Live support",
-          "desc": "Quick replies on order issues and help using what you bought."
+          "title": "Fast support",
+          "desc": "Reach us on WeChat, QQ or Telegram for pre-sale and after-sale help.",
+          "contact": "1"
         }
       ]
     },
@@ -1906,6 +1908,41 @@
       "close": "Close menu",
       "register": "Sign up"
     },
-    "close": "Close"
+    "close": "Close",
+    "contact": {
+      "title": "Contact us",
+      "desc": "Questions before or after buying? We reply quickly during working hours.",
+      "open": "Show contacts",
+      "wechat": "WeChat",
+      "copy": "Copy",
+      "copied": "Copied",
+      "go": "Open",
+      "empty": "Contact details are not set up yet. Please try again later."
+    },
+    "modules": {
+      "buy": "Buy now",
+      "chatgpt": {
+        "title": "ChatGPT Plus official top-up",
+        "desc": "Topped up through official channels — just enter your account.",
+        "sub": "Official top-up"
+      },
+      "global": {
+        "title": "Global accounts · Gift cards",
+        "apple": "Overseas Apple ID + gift cards",
+        "appleSub": "Overseas Apple IDs and App Store gift cards",
+        "card": "Visa / Mastercard",
+        "cardSub": "Visa and Mastercard cards for overseas subscriptions"
+      },
+      "more": {
+        "title": "More memberships",
+        "grok": "Grok",
+        "gemini": "Gemini",
+        "member": "Membership",
+        "card": "Visa",
+        "cardSub": "Mastercard",
+        "gmail": "Gmail",
+        "gmailSub": "Email"
+      }
+    }
   }
 }
