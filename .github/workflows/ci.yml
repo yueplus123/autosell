@@ -83,7 +83,13 @@ jobs:
         run: go vet ./...
 
       - name: Run tests
-        run: go test ./...
+        run: |
+          set -o pipefail
+          if ! go test ./... 2>&1 | tee go-test.log; then
+            # 把失败用例摘要输出成注解，方便在 PR / 运行概要里直接看到
+            grep -E -- '--- FAIL|^FAIL|_test\.go:[0-9]+|panic:' go-test.log | head -60 | while IFS= read -r line; do echo "::error::${line}"; done
+            exit 1
+          fi
 
       - name: Build server
         run: go build ./cmd/server
