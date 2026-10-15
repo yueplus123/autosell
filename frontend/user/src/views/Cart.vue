@@ -14,7 +14,7 @@
         icon="cart"
         :title="t('cart.empty')"
         :action-label="t('cart.emptyAction')"
-        action-to="/products"
+        :action-to="shopPath"
       />
 
       <div v-else class="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -143,7 +143,7 @@
               </router-link>
             </Button>
             <Button as-child variant="secondary" size="lg" class="w-full font-semibold">
-              <router-link to="/products">
+              <router-link :to="shopPath">
                 {{ t('cart.emptyAction') }}
               </router-link>
             </Button>
@@ -156,6 +156,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useStorefrontLinks } from '../composables/useStorefrontLinks'
 import { Trash2 } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -163,6 +164,8 @@ import EmptyState from '../components/EmptyState.vue'
 import SmartImage from '../components/SmartImage.vue'
 import CheckoutSteps from '../components/checkout/CheckoutSteps.vue'
 import { useCart } from '../composables/useCart'
+
+const { shopPath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

@@ -22,6 +22,8 @@ import TableSkeleton from '@/components/TableSkeleton.vue'
 import ListPagination from '@/components/ListPagination.vue'
 import { useListRefresh, type ListFetchOptions } from '@/composables/useListRefresh'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ResellerZoneScopeSelect from '@/components/admin/ResellerZoneScopeSelect.vue'
+import { normalizeResellerZoneScope } from '@/utils/resellerZone'
 import { Textarea } from '@/components/ui/textarea'
 import { confirmAction } from '@/utils/confirm'
 import { notifyError, notifySuccess } from '@/utils/notify'
@@ -63,13 +65,16 @@ const profileDetailLink = (profileId: number) => adminUrl(`/resellers/profiles/$
 const approveForm = reactive({
   defaultMarkup: '0.00',
   maxMarkup: '0.00',
+  zoneScope: 'all',
 })
 const editForm = reactive({
   defaultMarkup: '0.00',
   maxMarkup: '0.00',
   settlementStatus: RESELLER_SETTLEMENT_STATUS_NORMAL,
   reason: '',
+  zoneScope: 'all',
 })
+const zoneLabel = (value?: string) => t(`admin.resellerZone.${normalizeResellerZoneScope(value)}`)
 const reasonForm = reactive({
   reason: '',
 })
@@ -142,6 +147,7 @@ const openApproveDialog = (row: AdminResellerProfile) => {
   selectedProfile.value = row
   approveForm.defaultMarkup = row.default_markup_percent || '0.00'
   approveForm.maxMarkup = row.max_markup_percent || '0.00'
+  approveForm.zoneScope = normalizeResellerZoneScope(row.zone_scope)
   showApproveDialog.value = true
 }
 
@@ -168,6 +174,7 @@ const submitApproveProfile = async () => {
     await adminAPI.approveResellerProfile(row.id, {
       default_markup_percent: approveForm.defaultMarkup.trim() || '0.00',
       max_markup_percent: approveForm.maxMarkup.trim() || '0.00',
+      zone_scope: approveForm.zoneScope,
     })
     showApproveDialog.value = false
     notifySuccess(t('admin.resellerProfiles.actions.approveSuccess'))
@@ -217,6 +224,7 @@ const openEditDialog = (row: AdminResellerProfile) => {
   editForm.maxMarkup = row.max_markup_percent || '0.00'
   editForm.settlementStatus = row.settlement_status || RESELLER_SETTLEMENT_STATUS_NORMAL
   editForm.reason = ''
+  editForm.zoneScope = normalizeResellerZoneScope(row.zone_scope)
   showEditDialog.value = true
 }
 
@@ -231,6 +239,7 @@ const submitEditProfile = async () => {
       max_markup_percent: editForm.maxMarkup.trim() || '0.00',
       settlement_status: editForm.settlementStatus,
       reason: editForm.reason.trim() || undefined,
+      zone_scope: editForm.zoneScope,
     })
     showEditDialog.value = false
     notifySuccess(t('admin.resellerProfiles.actions.updateSuccess'))
@@ -321,6 +330,7 @@ onMounted(() => {
             <TableHead class="min-w-[200px] px-6 py-3">{{ t('admin.resellerProfiles.table.user') }}</TableHead>
             <TableHead class="px-6 py-3">{{ t('admin.resellerProfiles.table.status') }}</TableHead>
             <TableHead class="px-6 py-3">{{ t('admin.resellerProfiles.table.settlement') }}</TableHead>
+            <TableHead class="px-6 py-3">{{ t('admin.resellerZone.label') }}</TableHead>
             <TableHead class="px-6 py-3">{{ t('admin.resellerProfiles.table.defaultMarkup') }}</TableHead>
             <TableHead class="px-6 py-3">{{ t('admin.resellerProfiles.table.maxMarkup') }}</TableHead>
             <TableHead class="min-w-[180px] px-6 py-3">{{ t('admin.resellerProfiles.table.applyReason') }}</TableHead>
@@ -332,12 +342,12 @@ onMounted(() => {
         </TableHeader>
         <TableBody class="divide-y divide-border">
           <TableRow v-if="loading">
-            <TableCell :colspan="11" class="p-0">
+            <TableCell :colspan="12" class="p-0">
               <TableSkeleton :columns="11" :rows="5" />
             </TableCell>
           </TableRow>
           <TableRow v-else-if="rows.length === 0">
-            <TableCell colspan="11" class="px-6 py-8 text-center text-muted-foreground">{{ t('admin.resellerProfiles.empty') }}</TableCell>
+            <TableCell colspan="12" class="px-6 py-8 text-center text-muted-foreground">{{ t('admin.resellerProfiles.empty') }}</TableCell>
           </TableRow>
           <TableRow v-for="item in rows" :key="item.id" class="hover:bg-muted/30">
             <TableCell class="px-6 py-4">
@@ -366,6 +376,7 @@ onMounted(() => {
                 {{ settlementLabel(item.settlement_status) }}
               </span>
             </TableCell>
+            <TableCell class="whitespace-nowrap px-6 py-4 text-xs">{{ zoneLabel(item.zone_scope) }}</TableCell>
             <TableCell class="px-6 py-4 font-mono text-xs">{{ item.default_markup_percent || '0.00' }}</TableCell>
             <TableCell class="px-6 py-4 font-mono text-xs">{{ item.max_markup_percent || '0.00' }}</TableCell>
             <TableCell class="min-w-[180px] px-6 py-4 text-xs text-muted-foreground break-words">{{ item.apply_reason || '-' }}</TableCell>
@@ -453,6 +464,7 @@ onMounted(() => {
             <Input v-model="approveForm.maxMarkup" inputmode="decimal" placeholder="0.00" />
             <p class="text-xs text-muted-foreground">{{ t('admin.resellerProfiles.actions.maxMarkupZeroHint') }}</p>
           </div>
+          <ResellerZoneScopeSelect v-model="approveForm.zoneScope" />
           <div class="flex justify-end gap-2">
             <Button variant="outline" @click="showApproveDialog = false">{{ t('admin.common.cancel') }}</Button>
             <Button :disabled="operatingId === selectedProfile?.id" @click="submitApproveProfile">{{ t('admin.resellerProfiles.actions.approveConfirm') }}</Button>
@@ -507,6 +519,7 @@ onMounted(() => {
               </SelectContent>
             </Select>
           </div>
+          <ResellerZoneScopeSelect v-model="editForm.zoneScope" class="sm:col-span-2" />
           <div class="grid gap-2 sm:col-span-2">
             <Label>{{ t('admin.resellerProfiles.actions.operationReason') }}</Label>
             <Textarea v-model="editForm.reason" rows="3" />

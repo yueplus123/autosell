@@ -21,6 +21,8 @@ import { Dialog, DialogHeader, DialogScrollContent, DialogTitle } from '@/compon
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import ResellerZoneScopeSelect from '@/components/admin/ResellerZoneScopeSelect.vue'
+import { normalizeResellerZoneScope } from '@/utils/resellerZone'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
@@ -60,6 +62,7 @@ const editForm = reactive({
   maxMarkup: '0.00',
   settlementStatus: RESELLER_SETTLEMENT_STATUS_NORMAL,
   reason: '',
+  zoneScope: 'all',
 })
 
 const systemDomainForm = reactive({
@@ -91,6 +94,7 @@ const openEditDialog = () => {
   editForm.maxMarkup = profile.value.max_markup_percent || '0.00'
   editForm.settlementStatus = profile.value.settlement_status || RESELLER_SETTLEMENT_STATUS_NORMAL
   editForm.reason = ''
+  editForm.zoneScope = normalizeResellerZoneScope(profile.value.zone_scope)
   showEditDialog.value = true
 }
 
@@ -118,6 +122,7 @@ const submitEditProfile = async () => {
       max_markup_percent: editForm.maxMarkup.trim() || '0.00',
       settlement_status: editForm.settlementStatus,
       reason: editForm.reason.trim() || undefined,
+      zone_scope: editForm.zoneScope,
     })
     showEditDialog.value = false
     notifySuccess(t('admin.resellerProfileDetail.saveSuccess'))
@@ -250,6 +255,9 @@ onMounted(fetchDetail)
             </span>
             <span class="inline-flex rounded-full border px-2.5 py-1 text-xs" :class="settlementClass(profile.settlement_status)">
               {{ settlementLabel(profile.settlement_status) }}
+            </span>
+            <span class="inline-flex rounded-full border border-primary/30 bg-primary/10 px-2.5 py-1 text-xs text-primary">
+              {{ t(`admin.resellerZone.${normalizeResellerZoneScope(profile.zone_scope)}`) }}
             </span>
           </div>
         </div>
@@ -586,6 +594,7 @@ onMounted(fetchDetail)
               </SelectContent>
             </Select>
           </div>
+          <ResellerZoneScopeSelect v-model="editForm.zoneScope" class="sm:col-span-2" />
           <div class="grid gap-2 sm:col-span-2">
             <Label>{{ t('admin.resellerProfiles.actions.operationReason') }}</Label>
             <Textarea v-model="editForm.reason" rows="3" />

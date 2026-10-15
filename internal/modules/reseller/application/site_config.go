@@ -387,6 +387,10 @@ func (s *SiteConfigService) ApplyPublicConfigOverlay(ctx context.Context, tenant
 	if profile == nil || profile.Status != resellerdomain.ProfileStatusActive {
 		return out, nil
 	}
+	// 前台据此决定落地页：只代理单个专区时直接进入该专区，且不展示其他专区入口
+	if tenantInfo, ok := out["tenant"].(map[string]interface{}); ok {
+		tenantInfo["zone_scope"] = profile.EffectiveZoneScope()
+	}
 	cfg, err := s.repo.GetSiteConfigByResellerID(resellerID)
 	if err != nil {
 		return nil, err

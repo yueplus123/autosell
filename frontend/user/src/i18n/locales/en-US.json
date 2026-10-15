@@ -954,6 +954,15 @@
         "withdrawChannelRequired": "Please enter withdraw channel",
         "withdrawAccountRequired": "Please enter withdraw account",
         "withdrawFailed": "Failed to submit withdraw request, please try again later"
+      },
+      "zoneTitle": "Which zone do you want to resell?",
+      "zone": {
+        "ai": "AI zone",
+        "aiDesc": "ChatGPT, Claude and other AI plans, plus global accounts",
+        "game": "Anime zone",
+        "gameDesc": "Anime game support and top-ups",
+        "all": "Both zones",
+        "allDesc": "Sell in both the AI and Anime zones"
       }
     },
     "giftCard": {
@@ -1943,6 +1952,21 @@
         "gmail": "Gmail",
         "gmailSub": "Email"
       }
+    }
+  },
+  "zonePage": {
+    "browse": "Browse products",
+    "count": "{n} products",
+    "emptySearch": "Try a different keyword",
+    "reset": "Clear filters",
+    "pagination": "Pagination",
+    "ai": {
+      "search": "Search ChatGPT, Claude, Gemini…",
+      "listTitle": "All AI products"
+    },
+    "game": {
+      "search": "Search games or products…",
+      "listTitle": "All anime products"
     }
   }
 }

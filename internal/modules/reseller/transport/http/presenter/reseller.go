@@ -67,6 +67,7 @@ type ResellerManagementProfileResp struct {
 	DefaultMarkupPercent string     `json:"default_markup_percent"`
 	MaxMarkupPercent     string     `json:"max_markup_percent"`
 	SettlementStatus     string     `json:"settlement_status"`
+	ZoneScope            string     `json:"zone_scope"`
 	ReviewedAt           *time.Time `json:"reviewed_at,omitempty"`
 	CreatedAt            time.Time  `json:"created_at"`
 	UpdatedAt            time.Time  `json:"updated_at"`
@@ -250,6 +251,7 @@ func NewResellerManagementProfileResp(profile *resellerdomain.Profile) *Reseller
 		DefaultMarkupPercent: profile.DefaultMarkupPercent.String(),
 		MaxMarkupPercent:     profile.MaxMarkupPercent.String(),
 		SettlementStatus:     profile.SettlementStatus,
+		ZoneScope:            profile.EffectiveZoneScope(),
 		ReviewedAt:           profile.ReviewedAt,
 		CreatedAt:            profile.CreatedAt,
 		UpdatedAt:            profile.UpdatedAt,

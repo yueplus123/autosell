@@ -33,7 +33,7 @@
       </div>
       <span
         class="rounded-full px-[18px] py-2 text-sm font-medium max-sm:px-3.5 max-sm:py-1.5 max-sm:text-[13px]"
-        :class="soldOut ? 'bg-[#e8e8ed] text-[color:var(--xh-muted)]' : 'bg-[color:var(--xh-accent)] text-white group-hover:bg-[color:var(--xh-accent-hover)]'"
+        :class="soldOut ? 'bg-[#e8e8ed] text-[color:var(--xh-muted)]' : buyTone"
       >{{ soldOut ? t('xinhuo.shop.soldOut') : t('xinhuo.shop.buy') }}</span>
     </div>
   </RouterLink>
@@ -45,7 +45,15 @@ import { useI18n } from 'vue-i18n'
 import { getFirstImageUrl, getImageUrl } from '../../../utils/image'
 import { useLocalized, useProductLabels } from '../../../composables/useProduct'
 
-const props = withDefaults(defineProps<{ product: any; index?: number }>(), { index: 0 })
+// tone：专区配色（ai 黑色按钮、game 粉紫渐变按钮），默认薪火蓝
+const props = withDefaults(defineProps<{ product: any; index?: number; tone?: 'default' | 'ai' | 'game' }>(), { index: 0, tone: 'default' })
+
+const BUY_TONES = {
+  default: 'bg-[color:var(--xh-accent)] text-white group-hover:bg-[color:var(--xh-accent-hover)]',
+  ai: 'bg-[#0b0b0c] text-white group-hover:bg-black',
+  game: 'bg-linear-to-r from-violet-600 via-fuchsia-500 to-orange-400 text-white group-hover:brightness-110',
+} as const
+const buyTone = computed(() => BUY_TONES[props.tone ?? 'default'])
 
 const { t } = useI18n()
 const { getLocalizedText, formatPrice } = useLocalized()

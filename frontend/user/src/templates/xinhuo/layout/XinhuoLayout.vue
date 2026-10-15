@@ -5,7 +5,6 @@
       <div class="relative mx-auto flex w-full max-w-[1200px] items-center justify-center gap-3 px-12 py-2 text-center">
         <span class="flex-none rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">{{ t('xinhuo.announcementTag') }}</span>
         <span class="truncate">{{ announcementText }}</span>
-        <RouterLink v-if="noticeEnabled" to="/notice" class="flex-none font-medium underline underline-offset-2 max-sm:hidden">{{ t('xinhuo.viewDetails') }}</RouterLink>
         <button
           type="button"
           class="absolute right-2 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full hover:bg-white/15"
@@ -18,7 +17,7 @@
     <!-- 黑色顶栏 -->
     <header class="sticky top-0 z-50 border-b border-[#1c1c1f] bg-black text-[#f5f5f7]">
       <div class="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-6 px-4 sm:px-6">
-        <RouterLink to="/" class="flex min-w-0 items-center gap-2.5 text-[17px] font-bold text-[#f5f5f7]" :title="brandName">
+        <RouterLink :to="homePath" class="flex min-w-0 items-center gap-2.5 text-[17px] font-bold text-[#f5f5f7]" :title="brandName">
           <img v-if="brandLogo" :src="brandLogo" :alt="brandName" class="h-7 max-w-[140px] object-contain" />
           <span v-else class="grid h-7 w-7 flex-none place-items-center rounded-lg bg-[color:var(--xh-accent)]">
             <Flame class="h-4 w-4 text-white" />
@@ -90,27 +89,19 @@
 
     <!-- 页脚 -->
     <footer class="bg-[#0b0b0c] text-[13px] text-[#b8b8be]">
-      <div class="mx-auto grid w-full max-w-[1200px] grid-cols-2 gap-8 px-4 pb-8 pt-12 sm:px-6 lg:grid-cols-[1.6fr_repeat(3,1fr)]">
-        <div class="col-span-2 lg:col-span-1">
+      <!-- 页脚只保留品牌、订单查询与联系方式：不放首页 / 全部商品 / 公告 / 博客等入口，顾客留在当前专区 -->
+      <div class="mx-auto grid w-full max-w-[1200px] gap-8 px-4 pb-8 pt-12 sm:grid-cols-[1.6fr_1fr] sm:px-6">
+        <div>
           <div class="text-base font-bold text-[#f5f5f7]">{{ brandName }}</div>
           <p class="mt-3 max-w-[36ch] leading-relaxed">{{ brandDescription || t('xinhuo.footer.tagline') }}</p>
         </div>
         <div class="flex flex-col gap-2.5">
-          <div class="font-medium text-[#f5f5f7]">{{ t('xinhuo.footer.shop') }}</div>
-          <RouterLink to="/products" class="hover:text-white">{{ t('xinhuo.footer.allProducts') }}</RouterLink>
-          <RouterLink v-if="noticeEnabled" to="/notice" class="hover:text-white">{{ t('xinhuo.footer.notice') }}</RouterLink>
-        </div>
-        <div class="flex flex-col gap-2.5">
           <div class="font-medium text-[#f5f5f7]">{{ t('xinhuo.footer.service') }}</div>
           <RouterLink :to="lookupTarget" class="hover:text-white">{{ t('xinhuo.footer.orderLookup') }}</RouterLink>
-          <a v-if="contact?.telegram" :href="contact.telegram" target="_blank" rel="noopener noreferrer" class="hover:text-white">Telegram</a>
+          <span v-if="contact?.wechat">{{ t('xinhuo.contact.wechat') }}：{{ contact.wechat }}</span>
+          <span v-if="contact?.qq">QQ：{{ contact.qq }}</span>
+          <a v-if="contact?.telegram" :href="telegramHref" target="_blank" rel="noopener noreferrer" class="hover:text-white">Telegram</a>
           <a v-if="contact?.whatsapp" :href="contact.whatsapp" target="_blank" rel="noopener noreferrer" class="hover:text-white">WhatsApp</a>
-        </div>
-        <div class="flex flex-col gap-2.5">
-          <div class="font-medium text-[#f5f5f7]">{{ t('xinhuo.footer.company') }}</div>
-          <RouterLink v-if="aboutEnabled" to="/about" class="hover:text-white">{{ t('xinhuo.footer.about') }}</RouterLink>
-          <RouterLink v-if="blogEnabled" to="/blog" class="hover:text-white">{{ t('xinhuo.footer.blog') }}</RouterLink>
-          <a v-for="link in footerLinks" :key="link.name" :href="link.url || 'javascript:void(0)'" :target="link.url ? '_blank' : undefined" rel="noopener noreferrer" class="hover:text-white">{{ link.name }}</a>
         </div>
       </div>
       <div class="mx-auto flex w-full max-w-[1200px] flex-wrap justify-between gap-3 border-t border-[#2a2a2e] px-4 pb-8 pt-5 sm:px-6">
@@ -132,7 +123,7 @@ import { Check, Flame, Globe, LogOut, Menu, ShoppingBag, X } from 'lucide-vue-ne
 import { useAppStore } from '../../../stores/app'
 import { useCartStore } from '../../../stores/cart'
 import { useUserAuthStore } from '../../../stores/userAuth'
-import { useNavConfig } from '../../../composables/useNavConfig'
+import { useStorefrontLinks } from '../../../composables/useStorefrontLinks'
 import { getImageUrl } from '../../../utils/image'
 import { getLocalizedText } from '../../../utils/resellerSiteConfig'
 import '../styles/xinhuo.css'
@@ -159,23 +150,17 @@ const brandDescription = computed(() => {
   return ''
 })
 
-const { blogEnabled, noticeEnabled, aboutEnabled } = useNavConfig()
+// 顶栏 logo：在专区里（或分站只代理一个专区）时回到专区，而不是总首页
+const { homePath } = useStorefrontLinks()
 
 // 订单查询是独立页面（游客凭邮箱 + 订单密码查询，登录用户可在个人中心查看）
 const lookupTarget = '/guest/orders'
 
-const footerLinks = computed(() => {
-  const links = appStore.config?.footer_links
-  if (!Array.isArray(links)) return []
-  return links
-    .map((item: { name?: unknown; url?: unknown }) => ({
-      name: typeof item?.name === 'string' ? item.name.trim() : getLocalizedText(item?.name as Record<string, string>, appStore.locale),
-      url: String(item?.url || '').trim(),
-    }))
-    .filter((item) => item.name)
+const contact = computed(() => appStore.config?.contact as { telegram?: string; whatsapp?: string; wechat?: string; qq?: string } | undefined)
+const telegramHref = computed(() => {
+  const raw = String(contact.value?.telegram || '').trim()
+  return /^https?:\/\//i.test(raw) ? raw : `https://t.me/${raw.replace(/^@/, '')}`
 })
-
-const contact = computed(() => appStore.config?.contact as { telegram?: string; whatsapp?: string } | undefined)
 const cartCount = computed(() => cartStore.totalItems)
 
 // ==================== 公告条 ====================

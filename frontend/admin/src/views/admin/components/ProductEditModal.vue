@@ -17,6 +17,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { notifyError } from '@/utils/notify'
 import { getLocalizedText } from '@/utils/format'
 import { buildAdminCategoryPath, createAdminCategoryChildCountMap, createAdminCategoryMap, flattenAdminCategories, isAdminProductCategorySelectable } from '@/utils/category'
+import { STORE_ZONES, findZoneRoot, zoneOfCategory, type StoreZone } from '@/utils/zone'
 
 const props = defineProps<{
   modelValue: boolean
@@ -37,6 +38,8 @@ const isEditing = ref(false)
 const paymentChannels = ref<AdminPaymentChannel[]>([])
 const editingIsMapped = ref(false)
 const initialCategoryID = ref<number | null>(null)
+// 上架专区：先选 AI / 二次元，分类下拉只显示该专区下的分类
+const zone = ref<StoreZone | null>(null)
 const newTag = ref('')
 const currentLang = ref('zh-CN')
 
@@ -48,10 +51,33 @@ const languages = computed(() => [
 
 const categoryMap = computed(() => createAdminCategoryMap(props.categories))
 const categoryChildCountMap = computed(() => createAdminCategoryChildCountMap(props.categories))
-const categoryOptions = computed(() => flattenAdminCategories(props.categories).map((item) => ({
-  ...item,
-  selectable: isProductCategorySelectable(item.category.id),
-})))
+const zoneRoot = computed(() => (zone.value ? findZoneRoot(zone.value, props.categories) : null))
+const categoryOptions = computed(() => {
+  const root = zoneRoot.value
+  if (!root) return []
+  return flattenAdminCategories(props.categories)
+    .filter((item) => item.category.id === root.id || Number(item.category.parent_id) === root.id)
+    .map((item) => ({
+      ...item,
+      selectable: isProductCategorySelectable(item.category.id),
+    }))
+})
+const zoneMissing = computed(() => !!zone.value && !zoneRoot.value)
+
+const selectZone = (next: StoreZone) => {
+  if (zone.value === next) return
+  zone.value = next
+  // 换专区后，原来选的分类不属于新专区就清空，避免商品挂错专区
+  if (zoneOfCategory(form.category_id, props.categories) !== next) {
+    form.category_id = null
+  }
+}
+
+const getZoneRequiredError = () => {
+  if (locale.value === 'en-US') return 'Please choose the zone this product is listed in (AI or Anime)'
+  if (locale.value === 'zh-TW') return '請先選擇上架專區（AI 專區或二次元專區）'
+  return '请先选择上架专区（AI 专区或二次元专区）'
+}
 
 const getCategoryOptionLabel = (category: AdminCategory) => {
   return buildAdminCategoryPath(category, categoryMap.value, (item) => getLocalizedText(item.name))
@@ -479,6 +505,7 @@ const isTextLikeField = (fieldType: string) => {
 }
 
 const resetForm = () => {
+  zone.value = null
   initialCategoryID.value = null
   Object.assign(form, {
     id: 0,
@@ -510,6 +537,7 @@ const resetForm = () => {
 
 const populateForm = (product: AdminProduct) => {
   initialCategoryID.value = Number(product.category_id || 0) || null
+  zone.value = zoneOfCategory(product.category_id, props.categories)
   let imagesList: string[] = []
   if (product.images) {
     if (Array.isArray(product.images)) {
@@ -563,9 +591,15 @@ const closeModal = () => {
 const handleSubmit = async () => {
   submitting.value = true
   try {
+    if (!zone.value) {
+      throw new Error(getZoneRequiredError())
+    }
     const normalizedCategoryID = Number(form.category_id)
     if (!Number.isFinite(normalizedCategoryID) || normalizedCategoryID <= 0) {
       throw new Error(getCategoryRequiredError())
+    }
+    if (zoneOfCategory(normalizedCategoryID, props.categories) !== zone.value) {
+      throw new Error(getZoneRequiredError())
     }
     if (!isProductCategorySelectable(normalizedCategoryID)) {
       throw new Error(getCategoryLeafTip())
@@ -681,6 +715,16 @@ watch(
   }
 )
 
+// 分类列表可能晚于商品数据加载，加载后再推断一次上架专区
+watch(
+  () => props.categories,
+  () => {
+    if (!zone.value && form.category_id) {
+      zone.value = zoneOfCategory(form.category_id, props.categories)
+    }
+  },
+)
+
 // Also handle when modal opens
 watch(
   () => props.modelValue,
@@ -756,9 +800,33 @@ watch(
             <p class="mt-1 text-xs text-muted-foreground">{{ t('admin.products.form.seoMetaDescriptionTip') }}</p>
           </div>
 
+          <div class="col-span-1 md:col-span-2">
+            <label class="block text-xs font-medium text-muted-foreground mb-1.5">{{ t('admin.products.zone.label') }} <span class="text-destructive">*</span></label>
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                v-for="z in STORE_ZONES"
+                :key="z"
+                type="button"
+                class="flex items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors"
+                :class="zone === z ? 'border-primary bg-primary/10 ring-1 ring-primary' : 'border-border hover:border-muted-foreground/50'"
+                :aria-pressed="zone === z"
+                @click="selectZone(z)"
+              >
+                <span class="grid h-9 w-9 flex-none place-items-center rounded-md text-sm font-bold text-white" :class="z === 'ai' ? 'bg-neutral-900' : 'bg-gradient-to-br from-violet-600 via-fuchsia-500 to-orange-400'">{{ z === 'ai' ? 'AI' : '次' }}</span>
+                <span>
+                  <span class="block text-sm font-semibold">{{ t(`admin.products.zone.${z}`) }}</span>
+                  <span class="block text-xs text-muted-foreground">{{ t(`admin.products.zone.${z}Desc`) }}</span>
+                </span>
+              </button>
+            </div>
+            <p v-if="zoneMissing" class="mt-1.5 text-xs text-destructive">{{ t('admin.products.zone.missing') }}</p>
+            <p v-else-if="!zone" class="mt-1.5 text-xs text-muted-foreground">{{ t('admin.products.zone.hint') }}</p>
+          </div>
+
           <div class="col-span-1">
             <label class="block text-xs font-medium text-muted-foreground mb-1.5">{{ t('admin.products.form.category') }}</label>
             <Select
+              :disabled="!zone || zoneMissing"
               :model-value="form.category_id ? String(form.category_id) : '__none__'"
               @update:modelValue="(value) => { form.category_id = value && value !== '__none__' ? Number(value) : null }"
             >

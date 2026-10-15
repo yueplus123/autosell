@@ -240,6 +240,8 @@ export interface ResellerManagementSnapshotData {
 
 export interface ResellerApplyPayload {
     reason?: string
+    /** 申请代理的专区：all / ai / game */
+    zone_scope?: string
 }
 
 export interface ResellerCustomDomainPayload {

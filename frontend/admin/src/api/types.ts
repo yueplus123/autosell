@@ -831,6 +831,8 @@ export interface AdminResellerProfile {
   default_markup_percent: string
   max_markup_percent: string
   settlement_status: string
+  /** 可代理的专区：all / ai / game */
+  zone_scope?: string
   reviewed_by?: number
   reviewed_at?: string
   created_at: string
@@ -997,6 +999,7 @@ export interface AdminResellerProductSettingPreviewData {
 export interface AdminResellerProfileApprovePayload {
   default_markup_percent?: string
   max_markup_percent?: string
+  zone_scope?: string
 }
 
 export interface AdminResellerProfileUpdatePayload {
@@ -1004,6 +1007,7 @@ export interface AdminResellerProfileUpdatePayload {
   max_markup_percent?: string
   settlement_status?: string
   reason?: string
+  zone_scope?: string
 }
 
 export interface AdminResellerSystemDomainPayload {

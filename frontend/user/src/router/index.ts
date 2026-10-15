@@ -5,6 +5,8 @@ import { useTelegramMiniAppStore } from '../stores/telegramMiniApp'
 import { captureAffiliateFromRoute } from '../utils/affiliate'
 import { templateView } from '../templates/registry'
 import { GOOGLE_REDIRECT_FRONTEND_CALLBACK_PATH } from '../utils/googleRedirect'
+import { rememberActiveZone, tenantLockedZone, zoneSearchPath } from '../utils/storefrontZone'
+import { businessZonePath, isBusinessLineKey } from '../utils/businessLines'
 
 type RouteComponentLoader = () => Promise<unknown>
 
@@ -341,6 +343,23 @@ router.beforeEach(async (to, _from, next) => {
     // Ensure config is loaded before checking template mode
     if (!appStore.config) {
         await appStore.loadConfig()
+    }
+
+    // ===== 专区锁定 =====
+    // 只代理一个专区的分站：首页 / 全部商品 / 分类页 / 其他专区都进入本专区
+    const lockedZone = tenantLockedZone(appStore.config as any)
+    if (lockedZone) {
+        const isStorefrontIndex = to.name === 'home' || to.name === 'products' || to.name === 'category-products'
+        const otherZone = to.name === 'business-zone' && String(to.params.key || '') !== lockedZone
+        if (isStorefrontIndex || otherZone) {
+            const search = typeof to.query.search === 'string' ? to.query.search : ''
+            next(search ? zoneSearchPath(lockedZone, search) : businessZonePath(lockedZone))
+            return
+        }
+    }
+    // 进入专区后记住它，站内「返回首页 / 继续购物」都回到这个专区
+    if (to.name === 'business-zone' && isBusinessLineKey(String(to.params.key || ''))) {
+        rememberActiveZone(String(to.params.key) as 'ai' | 'game')
     }
 
     if (to.meta.requiresUserAuth) {

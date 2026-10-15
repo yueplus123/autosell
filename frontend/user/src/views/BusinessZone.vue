@@ -9,8 +9,7 @@
       <span class="pointer-events-none absolute bottom-0 left-1/2 h-40 w-[36rem] -translate-x-1/2 rounded-full bg-fuchsia-600/20 blur-3xl"></span>
 
       <div class="container relative mx-auto px-4">
-        <BreadcrumbLite :label="t('home.business.ai.eyebrow')" dark />
-        <div class="mt-6 max-w-3xl space-y-5">
+        <div class="max-w-3xl space-y-5">
           <span class="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-3 py-1 font-mono text-xs uppercase tracking-[0.2em] text-cyan-300">
             <Sparkles class="h-3.5 w-3.5" aria-hidden="true" />
             {{ t('zone.ai.badge') }}
@@ -58,8 +57,7 @@
       <Gamepad2 class="pointer-events-none absolute -bottom-10 right-4 h-56 w-56 -rotate-12 text-pink-400/15" :stroke-width="1.25" aria-hidden="true" />
 
       <div class="container relative mx-auto px-4">
-        <BreadcrumbLite :label="t('zone.game.badge')" />
-        <div class="mt-6 max-w-3xl space-y-5">
+        <div class="max-w-3xl space-y-5">
           <span class="inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-1.5 text-sm font-bold text-pink-600 shadow-sm dark:bg-white/10 dark:text-pink-300">
             <Gamepad2 class="h-4 w-4" aria-hidden="true" />
             {{ t('zone.game.badge') }}
@@ -185,11 +183,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, onMounted, ref, watch } from 'vue'
-import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
-  BadgeCheck, Check, ChevronRight, Gamepad2, Headphones, Heart, LayoutGrid, Layers, Search, Sparkles, Star, Tag, X, Zap,
+  BadgeCheck, Check, Gamepad2, Headphones, Heart, LayoutGrid, Layers, Search, Sparkles, Star, Tag, X, Zap,
 } from 'lucide-vue-next'
 import { categoryAPI, productAPI } from '../api'
 import { getImageUrl } from '../utils/image'
@@ -218,17 +216,6 @@ const isAi = computed(() => zoneKey.value === 'ai')
 // classic 模板导航栏是 fixed，需要让出高度；vault / xinhuo 的导航栏是 sticky，不需要
 const heroTopClass = getActiveTemplate() === 'classic' ? 'pt-24' : 'pt-10 md:pt-14'
 
-// 简易面包屑：首页 › 专区名
-const BreadcrumbLite = defineComponent({
-  props: { label: { type: String, required: true }, dark: Boolean },
-  setup(props) {
-    return () => h('nav', { class: ['flex items-center gap-1.5 text-sm', props.dark ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'] }, [
-      h(RouterLink, { to: '/', class: props.dark ? 'hover:text-white' : 'hover:text-slate-900 dark:hover:text-white' }, () => t('nav.home')),
-      h(ChevronRight, { class: 'h-3.5 w-3.5', 'aria-hidden': 'true' }),
-      h('span', { class: props.dark ? 'text-slate-200' : 'text-slate-700 dark:text-slate-200' }, props.label),
-    ])
-  },
-})
 
 const aiGridStyle = {
   backgroundImage:
@@ -274,8 +261,9 @@ const products = ref<any[]>([])
 const loading = ref(true)
 const currentPage = ref(1)
 const totalPages = ref(0)
-const searchQuery = ref('')
-const appliedSearch = ref('')
+const initialQ = typeof route.query.q === 'string' ? route.query.q.trim() : ''
+const searchQuery = ref(initialQ)
+const appliedSearch = ref(initialQ)
 const searchActive = computed(() => appliedSearch.value !== '')
 
 const loadProducts = async () => {

@@ -3,7 +3,7 @@
     <div class="relative z-10 w-full max-w-lg">
       <div class="mb-4 flex items-center justify-between px-1">
         <Button as-child variant="ghost" size="sm" class="rounded-full gap-1 text-muted-foreground">
-          <router-link to="/">
+          <router-link :to="homePath">
             <ArrowLeft class="h-4 w-4" />
             {{ t('auth.login.backHome') }}
           </router-link>
@@ -274,6 +274,7 @@
 
 <script setup lang="ts">
 import ImageCaptcha from '../../components/captcha/ImageCaptcha.vue'
+import { useStorefrontLinks } from '../../composables/useStorefrontLinks'
 import TurnstileCaptcha from '../../components/captcha/TurnstileCaptcha.vue'
 import FormField from '../../components/FormField.vue'
 import GoogleIdentityButton from '../../components/auth/GoogleIdentityButton.vue'
@@ -285,6 +286,8 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useLogin } from '../../composables/useLogin'
+
+const { homePath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

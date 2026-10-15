@@ -36,8 +36,7 @@
         <BreadcrumbNav
           class="mb-8"
           :items="[
-            { label: t('nav.home'), to: '/' },
-            { label: t('nav.products'), to: '/products' },
+            ...(zone ? [{ label: homeLabel, to: homePath }] : [{ label: t('nav.home'), to: '/' }, { label: t('nav.products'), to: '/products' }]),
             { label: getLocalizedText(product.title) },
           ]"
         />
@@ -362,7 +361,7 @@
 
         <!-- Back Button -->
         <div class="mb-12 text-center">
-          <router-link to="/products"
+          <router-link :to="shopPath"
             class="inline-flex items-center space-x-2 text-muted-foreground hover:text-foreground transition-colors border-b border-transparent hover:border-current pb-1">
             <ArrowLeft class="w-5 h-5" />
             <span>{{ t('productDetail.backToProducts') }}</span>
@@ -402,7 +401,7 @@
             {{ t('errorBoundary.retry') }}
           </Button>
           <Button variant="secondary" as-child class="rounded-full h-10">
-            <router-link to="/products">{{ t('productDetail.backToProducts') }}</router-link>
+            <router-link :to="shopPath">{{ t('productDetail.backToProducts') }}</router-link>
           </Button>
         </template>
       </EmptyState>
@@ -412,6 +411,7 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
+import { useStorefrontLinks } from '../composables/useStorefrontLinks'
 import { useI18n } from 'vue-i18n'
 import { ArrowLeft, Lock, Minus, Pencil, Plus, RotateCw, Tag, UserPlus, Zap } from 'lucide-vue-next'
 import { getImageUrl } from '../utils/image'
@@ -424,6 +424,8 @@ import EmptyState from '../components/EmptyState.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+
+const { zone, homeLabel, homePath, shopPath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

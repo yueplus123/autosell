@@ -17,7 +17,7 @@
         icon="cart"
         :title="t('checkout.empty')"
         :action-label="t('checkout.emptyAction')"
-        action-to="/products"
+        :action-to="shopPath"
       />
 
       <div v-else class="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -312,6 +312,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useStorefrontLinks } from '../composables/useStorefrontLinks'
 import { pageAlertVariant, pageAlertToneClass } from '../utils/alerts'
 import ImageCaptcha from '../components/captcha/ImageCaptcha.vue'
 import TurnstileCaptcha from '../components/captcha/TurnstileCaptcha.vue'
@@ -323,6 +324,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useCheckout } from '../composables/useCheckout'
+
+const { shopPath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

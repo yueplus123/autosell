@@ -1,6 +1,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAppStore } from '../stores/app'
+import { storefrontHomePath } from '../utils/storefrontZone'
 
 /**
  * 404 页共享逻辑（classic + vault 双模板共用）。
@@ -20,7 +21,7 @@ export function useNotFound() {
       router.back()
       return
     }
-    router.push('/')
+    router.push(storefrontHomePath(appStore.config as any))
   }
 
   return {

@@ -46,7 +46,8 @@ func NewUserHandler(management ManagementService, siteConfig SiteConfigService, 
 }
 
 type applyRequest struct {
-	Reason string `json:"reason"`
+	Reason    string `json:"reason"`
+	ZoneScope string `json:"zone_scope"`
 }
 
 type customDomainRequest struct {
@@ -102,7 +103,7 @@ func (h *UserHandler) ApplyProfile(c *gin.Context) {
 		ginutil.RespondBindError(c, err)
 		return
 	}
-	profile, err := h.management.ApplyUserReseller(uid, resellermodule.ResellerApplyInput{Reason: req.Reason})
+	profile, err := h.management.ApplyUserReseller(uid, resellermodule.ResellerApplyInput{Reason: req.Reason, ZoneScope: req.ZoneScope})
 	if err != nil {
 		respondUserManagementError(c, err, "error.save_failed")
 		return

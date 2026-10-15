@@ -66,9 +66,84 @@ func (r *Store) ListHiddenProductIDs(resellerID uint) ([]uint, error) {
 		}
 	}
 
+	// 只代理部分专区时，专区之外的商品在分站一律视为隐藏
+	outOfZone, err := r.ListOutOfZoneProductIDs(resellerID)
+	if err != nil {
+		return nil, err
+	}
+	for _, id := range outOfZone {
+		hidden[id] = struct{}{}
+	}
+
 	ids := make([]uint, 0, len(hidden))
 	for id := range hidden {
 		ids = append(ids, id)
+	}
+	return ids, nil
+}
+
+// ResellerZoneScope 返回分销商的专区范围（all / ai / game）。
+func (r *Store) ResellerZoneScope(resellerID uint) (string, error) {
+	if resellerID == 0 {
+		return resellerdomain.ZoneScopeAll, nil
+	}
+	var scopes []string
+	if err := r.db.Model(&resellerdomain.Profile{}).
+		Where("id = ? AND deleted_at IS NULL", resellerID).
+		Pluck("zone_scope", &scopes).Error; err != nil {
+		return "", err
+	}
+	if len(scopes) == 0 {
+		return resellerdomain.ZoneScopeAll, nil
+	}
+	profile := resellerdomain.Profile{ZoneScope: scopes[0]}
+	return profile.EffectiveZoneScope(), nil
+}
+
+// ZoneCategoryIDs 返回专区包含的分类 ID（一级分类及其子分类）。
+func (r *Store) ZoneCategoryIDs(zone string) ([]uint, error) {
+	slugs := resellerdomain.ZoneRootSlugs[zone]
+	if len(slugs) == 0 {
+		return []uint{}, nil
+	}
+	var rootIDs []uint
+	if err := r.db.Table("categories").
+		Where("parent_id = 0 AND deleted_at IS NULL AND LOWER(slug) IN ?", slugs).
+		Pluck("id", &rootIDs).Error; err != nil {
+		return nil, err
+	}
+	if len(rootIDs) == 0 {
+		return []uint{}, nil
+	}
+	var childIDs []uint
+	if err := r.db.Table("categories").
+		Where("parent_id IN ? AND deleted_at IS NULL", rootIDs).
+		Pluck("id", &childIDs).Error; err != nil {
+		return nil, err
+	}
+	return append(rootIDs, childIDs...), nil
+}
+
+// ListOutOfZoneProductIDs 返回不在分销商专区范围内的商品 ID；代理全部专区时返回空。
+func (r *Store) ListOutOfZoneProductIDs(resellerID uint) ([]uint, error) {
+	scope, err := r.ResellerZoneScope(resellerID)
+	if err != nil {
+		return nil, err
+	}
+	if scope == resellerdomain.ZoneScopeAll {
+		return []uint{}, nil
+	}
+	allowed, err := r.ZoneCategoryIDs(scope)
+	if err != nil {
+		return nil, err
+	}
+	query := r.db.Model(&productdomain.Product{}).Where("deleted_at IS NULL")
+	if len(allowed) > 0 {
+		query = query.Where("category_id NOT IN ?", allowed)
+	}
+	var ids []uint
+	if err := query.Pluck("id", &ids).Error; err != nil {
+		return nil, err
 	}
 	return ids, nil
 }

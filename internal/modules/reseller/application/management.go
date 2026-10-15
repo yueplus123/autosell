@@ -24,11 +24,15 @@ type ManagementService struct {
 
 type ResellerApplyInput struct {
 	Reason string
+	// ZoneScope 申请代理的专区：all / ai / game，空值为 all
+	ZoneScope string
 }
 
 type ResellerApproveInput struct {
 	DefaultMarkupPercent decimal.Decimal
 	MaxMarkupPercent     decimal.Decimal
+	// ZoneScope 审核通过时确定的专区范围；空值沿用申请时的选择
+	ZoneScope string
 }
 
 type ResellerProfileUpdateInput struct {
@@ -36,6 +40,8 @@ type ResellerProfileUpdateInput struct {
 	MaxMarkupPercent     decimal.Decimal
 	SettlementStatus     string
 	Reason               string
+	// ZoneScope 可代理的专区；空值表示不修改
+	ZoneScope string
 }
 
 type ResellerSystemDomainInput struct {
@@ -78,6 +84,10 @@ func (s *ManagementService) ApplyUserReseller(userID uint, input ResellerApplyIn
 		return nil, resellercontract.ErrApplyDisabled
 	}
 	reason := strings.TrimSpace(input.Reason)
+	zoneScope, ok := resellerdomain.NormalizeZoneScope(input.ZoneScope)
+	if !ok {
+		return nil, resellercontract.ErrZoneScopeInvalid
+	}
 	existing, err := s.store.GetProfileByUserID(userID)
 	if err != nil {
 		return nil, err
@@ -88,6 +98,7 @@ func (s *ManagementService) ApplyUserReseller(userID uint, input ResellerApplyIn
 			Status:           resellerdomain.ProfileStatusPendingReview,
 			ApplyReason:      reason,
 			SettlementStatus: resellerdomain.SettlementStatusNormal,
+			ZoneScope:        zoneScope,
 		}
 		if err := s.store.CreateProfile(profile); err != nil {
 			return nil, err
@@ -98,6 +109,7 @@ func (s *ManagementService) ApplyUserReseller(userID uint, input ResellerApplyIn
 	case resellerdomain.ProfileStatusRejected:
 		existing.Status = resellerdomain.ProfileStatusPendingReview
 		existing.ApplyReason = reason
+		existing.ZoneScope = zoneScope
 		existing.RejectReason = ""
 		existing.ReviewedBy = nil
 		existing.ReviewedAt = nil
@@ -121,6 +133,14 @@ func (s *ManagementService) ApproveProfile(ctx context.Context, adminID, profile
 	if err := validateResellerProfileMarkup(input.DefaultMarkupPercent, input.MaxMarkupPercent); err != nil {
 		return nil, err
 	}
+	approveZoneScope := ""
+	if strings.TrimSpace(input.ZoneScope) != "" {
+		scope, ok := resellerdomain.NormalizeZoneScope(input.ZoneScope)
+		if !ok {
+			return nil, resellercontract.ErrZoneScopeInvalid
+		}
+		approveZoneScope = scope
+	}
 	var result *ResellerApproveResult
 	err := s.store.WithinManagementTransaction(func(repoTx resellercontract.ManagementStore) error {
 		profile, err := repoTx.GetProfileByID(profileID)
@@ -139,6 +159,11 @@ func (s *ManagementService) ApproveProfile(ctx context.Context, adminID, profile
 		profile.DefaultMarkupPercent = money.FromDecimal(input.DefaultMarkupPercent)
 		profile.MaxMarkupPercent = money.FromDecimal(input.MaxMarkupPercent)
 		profile.SettlementStatus = resellerdomain.SettlementStatusNormal
+		if approveZoneScope != "" {
+			profile.ZoneScope = approveZoneScope
+		} else {
+			profile.ZoneScope = profile.EffectiveZoneScope()
+		}
 		profile.ReviewedBy = &adminID
 		profile.ReviewedAt = &now
 		if err := repoTx.UpdateProfile(profile); err != nil {
@@ -153,6 +178,8 @@ func (s *ManagementService) ApproveProfile(ctx context.Context, adminID, profile
 	if result != nil && result.SystemDomain != nil {
 		_ = cache.DelResellerDomain(ctx, result.SystemDomain.Domain)
 	}
+	// 专区范围写在分站公开配置里，审核后立即失效缓存
+	_ = cache.Del(ctx, cache.PublicConfigCacheKey(&profileID))
 	return result, nil
 }
 
@@ -284,6 +311,14 @@ func (s *ManagementService) UpdateProfileOperationalConfig(adminID, profileID ui
 	if settlementStatus != "" && settlementStatus != resellerdomain.SettlementStatusNormal && settlementStatus != resellerdomain.SettlementStatusFrozen {
 		return nil, resellercontract.ErrProfileStatusInvalid
 	}
+	updateZoneScope := ""
+	if strings.TrimSpace(input.ZoneScope) != "" {
+		scope, ok := resellerdomain.NormalizeZoneScope(input.ZoneScope)
+		if !ok {
+			return nil, resellercontract.ErrZoneScopeInvalid
+		}
+		updateZoneScope = scope
+	}
 	var updated *resellerdomain.Profile
 	err := s.store.WithinManagementTransaction(func(repoTx resellercontract.ManagementStore) error {
 		profile, err := repoTx.GetProfileByID(profileID)
@@ -299,6 +334,9 @@ func (s *ManagementService) UpdateProfileOperationalConfig(adminID, profileID ui
 		if settlementStatus != "" {
 			profile.SettlementStatus = settlementStatus
 		}
+		if updateZoneScope != "" {
+			profile.ZoneScope = updateZoneScope
+		}
 		profile.ReviewedBy = &adminID
 		profile.ReviewedAt = &now
 		if err := repoTx.UpdateProfile(profile); err != nil {
@@ -313,6 +351,8 @@ func (s *ManagementService) UpdateProfileOperationalConfig(adminID, profileID ui
 	if updated == nil {
 		return nil, productcontract.ErrNotFound
 	}
+	// 专区范围写在分站公开配置里，修改后立即失效缓存
+	_ = cache.Del(context.Background(), cache.PublicConfigCacheKey(&profileID))
 	return s.store.GetProfileByID(profileID)
 }
 

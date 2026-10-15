@@ -32,6 +32,11 @@ type resellerPricingStore interface {
 	IsActiveRelatedAccount(resellerID, userID uint) (bool, error)
 }
 
+// resellerZoneStore 是可选能力：存储实现了它时，下单会拒绝分销商专区范围之外的商品。
+type resellerZoneStore interface {
+	ListOutOfZoneProductIDs(resellerID uint) ([]uint, error)
+}
+
 func NewResellerPricingResolver(repo resellerPricingStore) *ResellerPricingResolver {
 	return &ResellerPricingResolver{repo: repo}
 }
@@ -46,6 +51,16 @@ func (r *ResellerPricingResolver) ApplyToOrderBuildResult(tenant resellercontrac
 	profile, err := r.loadActiveProfile(*tenant.ResellerID)
 	if err != nil {
 		return nil, err
+	}
+	outOfZone := map[uint]struct{}{}
+	if zoneStore, ok := r.repo.(resellerZoneStore); ok {
+		ids, err := zoneStore.ListOutOfZoneProductIDs(*tenant.ResellerID)
+		if err != nil {
+			return nil, err
+		}
+		for _, id := range ids {
+			outOfZone[id] = struct{}{}
+		}
 	}
 	productIDs, skuIDs := collectOrderPlanIDs(result.Plans)
 	settings, err := r.repo.ListProductSettingsForPricing(*tenant.ResellerID, productIDs, skuIDs)
@@ -68,6 +83,9 @@ func (r *ResellerPricingResolver) ApplyToOrderBuildResult(tenant resellercontrac
 		plan := &result.Plans[i]
 		if plan == nil || plan.Product == nil || plan.SKU == nil {
 			return nil, ErrProductSKUInvalid
+		}
+		if _, blocked := outOfZone[plan.Product.ID]; blocked {
+			return nil, ErrResellerProductNotListed
 		}
 		productSetting := settingsByProduct[plan.Product.ID]
 		skuSetting := settingsBySKU[resellercontract.SettingKey{ProductID: plan.Product.ID, SKUID: plan.SKU.ID}]

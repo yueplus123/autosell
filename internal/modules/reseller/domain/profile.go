@@ -17,11 +17,13 @@ type Profile struct {
 	DefaultMarkupPercent money.Amount `gorm:"type:decimal(10,2);not null;default:0" json:"default_markup_percent"`
 	MaxMarkupPercent     money.Amount `gorm:"type:decimal(10,2);not null;default:0" json:"max_markup_percent"`
 	SettlementStatus     string       `gorm:"type:varchar(32);index;not null;default:'normal'" json:"settlement_status"`
-	ReviewedBy           *uint        `gorm:"index" json:"reviewed_by,omitempty"`
-	ReviewedAt           *time.Time   `gorm:"index" json:"reviewed_at,omitempty"`
-	CreatedAt            time.Time    `gorm:"index" json:"created_at"`
-	UpdatedAt            time.Time    `gorm:"index" json:"updated_at"`
-	DeletedAt            *time.Time   `gorm:"index" json:"-"`
+	// ZoneScope 可代理的专区：all（全部）/ ai / game，见 zone.go
+	ZoneScope  string     `gorm:"type:varchar(16);not null;default:'all'" json:"zone_scope"`
+	ReviewedBy *uint      `gorm:"index" json:"reviewed_by,omitempty"`
+	ReviewedAt *time.Time `gorm:"index" json:"reviewed_at,omitempty"`
+	CreatedAt  time.Time  `gorm:"index" json:"created_at"`
+	UpdatedAt  time.Time  `gorm:"index" json:"updated_at"`
+	DeletedAt  *time.Time `gorm:"index" json:"-"`
 
 	User *userdomain.User `gorm:"foreignKey:UserID" json:"user,omitempty"`
 }

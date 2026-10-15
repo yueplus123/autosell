@@ -16,6 +16,7 @@ func respondAdminManagementError(c *gin.Context, err error) {
 	case errors.Is(err, productcontract.ErrNotFound):
 		ginutil.RespondError(c, response.CodeNotFound, "error.bad_request", nil)
 	case errors.Is(err, resellercontract.ErrProfileStatusInvalid),
+		errors.Is(err, resellercontract.ErrZoneScopeInvalid),
 		errors.Is(err, resellercontract.ErrDomainStatusInvalid),
 		errors.Is(err, resellercontract.ErrDomainInvalid),
 		errors.Is(err, resellercontract.ErrSiteConfigInvalid),

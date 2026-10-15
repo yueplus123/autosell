@@ -1,10 +1,13 @@
+import type { BusinessLineKey } from '../../utils/businessLines'
+import { zoneSearchPath } from '../../utils/storefrontZone'
+
 /**
  * 薪火首页商品展示模块配置（「热门商品」的替代）。
  *
  * 每个模块是一组方块（square）或一组横向长条（banner）。
  * 每个方块的跳转：
  *   - product：填商品的 slug（商品详情页地址 /products/<slug> 里的那段），点击直接进入该商品；
- *   - 否则用 search：点击打开全部商品页并按这个关键词搜索。
+ *   - 否则用 search：点击进入所属专区（zone，默认 AI 专区）并按这个关键词搜索。
  * 图标文件放在 frontend/user/public/xinhuo/icons/ 下，按文件名引用。
  * 文案在语言包 xinhuo.modules.* 下（titleKey / subKey 指向的键）。
  */
@@ -29,6 +32,8 @@ export interface ModuleTile {
   glow: string
   product?: string
   search?: string
+  /** 所属专区，默认 ai */
+  zone?: BusinessLineKey
 }
 
 export interface HomeModule {
@@ -79,6 +84,5 @@ export const homeModules: HomeModule[] = [
 
 export const moduleTileLink = (tile: ModuleTile) => {
   if (tile.product) return `/products/${encodeURIComponent(tile.product)}`
-  if (tile.search) return { path: '/products', query: { search: tile.search } }
-  return '/products'
+  return zoneSearchPath(tile.zone ?? 'ai', tile.search ?? '')
 }

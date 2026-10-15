@@ -35,6 +35,14 @@ func (r *Store) ListProductsWithSettings(filter resellercontract.ProductSettingL
 	if filter.CategoryID > 0 {
 		query = query.Where("products.category_id = ?", filter.CategoryID)
 	}
+	// 只代理部分专区的分销商，后台只能看到并配置自己专区的商品
+	outOfZone, err := r.ListOutOfZoneProductIDs(filter.ResellerID)
+	if err != nil {
+		return nil, 0, err
+	}
+	if len(outOfZone) > 0 {
+		query = query.Where("products.id NOT IN ?", outOfZone)
+	}
 	if keyword := strings.TrimSpace(filter.Keyword); keyword != "" {
 		like := "%" + keyword + "%"
 		condition, argCount := gormutil.BuildLocalizedLikeCondition(r.db, []string{"products.slug"}, []string{"products.title_json", "products.description_json"})

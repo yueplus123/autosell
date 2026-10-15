@@ -1512,6 +1512,15 @@ const messages = {
         },
       },
       products: {
+        zone: {
+          label: '上架专区',
+          ai: 'AI 专区',
+          aiDesc: 'ChatGPT、Claude、Grok、Gemini、Apple ID、Visa、Gmail 等',
+          game: '二次元专区',
+          gameDesc: '原神、星穹铁道、绝区零等游戏赞助',
+          hint: '先选上架到哪个专区，下方分类只会列出该专区的分类。',
+          missing: '还没有这个专区的分类：请在「分类管理」创建 slug 为 ai 或 game-topup 的一级分类，或在服务器执行 seed-categories 命令。',
+        },
         title: '商品管理',
         create: '新增商品',
         searchPlaceholder: '搜索商品...',
@@ -3593,6 +3602,13 @@ const messages = {
           paySuccess: '分销提现申请已标记为已打款',
           payFailed: '标记分销提现打款失败',
         },
+      },
+      resellerZone: {
+        label: '代理专区',
+        all: '全部专区（AI + 二次元）',
+        ai: '仅 AI 专区',
+        game: '仅二次元专区',
+        hint: '只代理一个专区时，分站打开即进入该专区，也只能看到和卖这个专区的商品。',
       },
       resellerProfiles: {
         title: '分销商审核',
@@ -5965,6 +5981,15 @@ const messages = {
         },
       },
       products: {
+        zone: {
+          label: '上架專區',
+          ai: 'AI 專區',
+          aiDesc: 'ChatGPT、Claude、Grok、Gemini、Apple ID、Visa、Gmail 等',
+          game: '二次元專區',
+          gameDesc: '原神、星穹鐵道、絕區零等遊戲贊助',
+          hint: '先選上架到哪個專區，下方分類只會列出該專區的分類。',
+          missing: '還沒有這個專區的分類：請在「分類管理」建立 slug 為 ai 或 game-topup 的一級分類，或在伺服器執行 seed-categories 指令。',
+        },
         title: '商品管理',
         create: '新增商品',
         searchPlaceholder: '搜尋商品...',
@@ -8046,6 +8071,13 @@ const messages = {
           paySuccess: '分銷提現申請已標記為已打款',
           payFailed: '標記分銷提現打款失敗',
         },
+      },
+      resellerZone: {
+        label: '代理專區',
+        all: '全部專區（AI + 二次元）',
+        ai: '僅 AI 專區',
+        game: '僅二次元專區',
+        hint: '只代理一個專區時，分站開啟即進入該專區，也只能看到和販售這個專區的商品。',
       },
       resellerProfiles: {
         title: '分銷商審核',
@@ -10418,6 +10450,15 @@ const messages = {
         },
       },
       products: {
+        zone: {
+          label: 'Listing zone',
+          ai: 'AI zone',
+          aiDesc: 'ChatGPT, Claude, Grok, Gemini, Apple ID, Visa, Gmail…',
+          game: 'Anime zone',
+          gameDesc: 'Genshin Impact, Honkai: Star Rail, Zenless Zone Zero…',
+          hint: 'Choose a zone first; the category list below only shows that zone\u2019s categories.',
+          missing: 'This zone has no categories yet: create a top-level category with slug ai or game-topup, or run the seed-categories command on the server.',
+        },
         title: 'Products',
         create: 'Add product',
         searchPlaceholder: 'Search products...',
@@ -12499,6 +12540,13 @@ const messages = {
           paySuccess: 'Reseller withdraw request marked as paid',
           payFailed: 'Failed to mark reseller withdraw as paid',
         },
+      },
+      resellerZone: {
+        label: 'Zone',
+        all: 'All zones (AI + Anime)',
+        ai: 'AI zone only',
+        game: 'Anime zone only',
+        hint: 'A single-zone reseller site opens straight into that zone and can only show and sell its products.',
       },
       resellerProfiles: {
         title: 'Reseller Reviews',

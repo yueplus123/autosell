@@ -11,6 +11,8 @@ var (
 	ErrApplyDisabled = errors.New("reseller apply disabled")
 	// ErrProfileStatusInvalid 表示资料状态流转不合法。
 	ErrProfileStatusInvalid = errors.New("reseller profile status invalid")
+	// ErrZoneScopeInvalid 表示代理专区范围不合法（只能是 all / ai / game）。
+	ErrZoneScopeInvalid = errors.New("reseller zone scope invalid")
 	// ErrDomainInvalid 表示域名格式不合法。
 	ErrDomainInvalid = errors.New("reseller domain invalid")
 	// ErrDomainConflict 表示域名已被占用。

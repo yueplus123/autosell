@@ -23,7 +23,7 @@
           </p>
           <div class="flex flex-wrap gap-2">
             <Button variant="secondary" size="sm" as-child>
-              <RouterLink to="/products">
+              <RouterLink :to="shopPath">
                 <ShoppingBag class="opacity-70" />
                 {{ t('nav.products') }}
               </RouterLink>
@@ -45,7 +45,7 @@
 
         <div class="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button as-child class="min-w-[180px] h-12">
-            <RouterLink to="/">
+            <RouterLink :to="homePath">
               <Home />
               {{ t('notFoundPage.backHome') }}
             </RouterLink>
@@ -62,11 +62,14 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useStorefrontLinks } from '../composables/useStorefrontLinks'
 import { ArrowLeft, Bell, BookOpen, Frown, Home, Info, ShoppingBag } from 'lucide-vue-next'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useNotFound } from '../composables/useNotFound'
+
+const { homePath, shopPath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

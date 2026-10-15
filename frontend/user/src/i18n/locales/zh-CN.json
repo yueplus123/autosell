@@ -907,6 +907,15 @@
         "withdrawChannelRequired": "请输入提现渠道",
         "withdrawAccountRequired": "请输入提现账号",
         "withdrawFailed": "提现申请提交失败，请稍后重试"
+      },
+      "zoneTitle": "想代理哪个专区",
+      "zone": {
+        "ai": "AI 专区",
+        "aiDesc": "ChatGPT、Claude 等 AI 会员与海外账号",
+        "game": "二次元专区",
+        "gameDesc": "二次元游戏赞助与充值",
+        "all": "两个都代理",
+        "allDesc": "AI 与二次元专区都可以卖"
       }
     },
     "giftCard": {
@@ -1943,6 +1952,21 @@
         "gmail": "Gmail",
         "gmailSub": "邮箱"
       }
+    }
+  },
+  "zonePage": {
+    "browse": "浏览商品",
+    "count": "共 {n} 件商品",
+    "emptySearch": "换个关键词试试",
+    "reset": "清除筛选",
+    "pagination": "分页",
+    "ai": {
+      "search": "搜索 ChatGPT、Claude、Gemini…",
+      "listTitle": "全部 AI 商品"
+    },
+    "game": {
+      "search": "搜索游戏或商品…",
+      "listTitle": "全部二次元商品"
     }
   }
 }

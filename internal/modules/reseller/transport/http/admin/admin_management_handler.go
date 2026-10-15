@@ -56,6 +56,7 @@ func NewAdminManagementHandler(management AdminManagementService, directory Prof
 type profileApproveRequest struct {
 	DefaultMarkupPercent string `json:"default_markup_percent"`
 	MaxMarkupPercent     string `json:"max_markup_percent"`
+	ZoneScope            string `json:"zone_scope"`
 }
 
 type profileReasonRequest struct {
@@ -67,6 +68,7 @@ type profileUpdateRequest struct {
 	MaxMarkupPercent     string `json:"max_markup_percent"`
 	SettlementStatus     string `json:"settlement_status"`
 	Reason               string `json:"reason"`
+	ZoneScope            string `json:"zone_scope"`
 }
 
 type systemDomainRequest struct {
@@ -149,6 +151,7 @@ func (h *AdminManagementHandler) ApproveProfile(c *gin.Context) {
 	result, err := h.management.ApproveProfile(c.Request.Context(), adminID, id, resellermodule.ResellerApproveInput{
 		DefaultMarkupPercent: defaultMarkup,
 		MaxMarkupPercent:     maxMarkup,
+		ZoneScope:            req.ZoneScope,
 	})
 	if err != nil {
 		respondAdminManagementError(c, err)
@@ -197,6 +200,7 @@ func (h *AdminManagementHandler) UpdateProfile(c *gin.Context) {
 		MaxMarkupPercent:     maxMarkup,
 		SettlementStatus:     req.SettlementStatus,
 		Reason:               req.Reason,
+		ZoneScope:            req.ZoneScope,
 	})
 	if err != nil {
 		respondAdminManagementError(c, err)
@@ -208,6 +212,7 @@ func (h *AdminManagementHandler) UpdateProfile(c *gin.Context) {
 		"default_markup_percent": row.DefaultMarkupPercent.String(),
 		"max_markup_percent":     row.MaxMarkupPercent.String(),
 		"settlement_status":      row.SettlementStatus,
+		"zone_scope":             row.EffectiveZoneScope(),
 		"reason":                 strings.TrimSpace(req.Reason),
 	})
 	response.Success(c, dto.NewAdminResellerProfileResp(row))

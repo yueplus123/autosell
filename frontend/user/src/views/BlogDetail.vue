@@ -16,7 +16,7 @@
       <article v-else-if="post">
         <!-- Breadcrumb -->
         <nav class="mb-8 flex items-center space-x-2 text-sm text-muted-foreground font-medium">
-          <router-link to="/" class="text-muted-foreground transition-colors hover:text-foreground">{{ t('nav.home')
+          <router-link :to="homePath" class="text-muted-foreground transition-colors hover:text-foreground">{{ t('nav.home')
           }}</router-link>
           <span>/</span>
           <router-link :to="backLink" class="text-muted-foreground transition-colors hover:text-foreground">{{ backText
@@ -117,6 +117,7 @@
 
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
+import { useStorefrontLinks } from '../composables/useStorefrontLinks'
 import { ArrowLeft, AlertCircle } from 'lucide-vue-next'
 import { getImageUrl } from '../utils/image'
 import { processHtmlForDisplay } from '../utils/content'
@@ -124,6 +125,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useBlogDetail } from '../composables/useBlogDetail'
+
+const { homePath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

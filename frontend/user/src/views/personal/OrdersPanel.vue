@@ -6,7 +6,7 @@
           {{ t('orders.pageInfo', { page: activePagination.page, total: activePagination.total_page }) }}
         </Badge>
         <Button as-child variant="ghost" size="sm" class="rounded-full">
-          <router-link to="/products">{{ t('orders.continueShopping') }}</router-link>
+          <router-link :to="shopPath">{{ t('orders.continueShopping') }}</router-link>
         </Button>
       </template>
     </PanelHeading>
@@ -93,7 +93,7 @@
         icon="order"
         :description="hasOrderActiveFilters ? t('orders.emptyFiltered') : t('orders.empty')"
         :action-label="t('orders.emptyAction')"
-        action-to="/products"
+        :action-to="shopPath"
       />
 
       <div v-else class="space-y-4">
@@ -242,6 +242,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { useStorefrontLinks } from '../../composables/useStorefrontLinks'
 import { useI18n } from 'vue-i18n'
 import { ShoppingBag, Layers, Clock, CheckCircle2, Wallet } from 'lucide-vue-next'
 import { userOrderAPI } from '../../api'
@@ -258,6 +259,8 @@ import EmptyState from '../../components/EmptyState.vue'
 import PaginationNav from '../../components/PaginationNav.vue'
 import PanelHeading from '../../components/shared/PanelHeading.vue'
 import StatCard from '../../components/shared/StatCard.vue'
+
+const { shopPath } = useStorefrontLinks()
 
 const { t } = useI18n()
 

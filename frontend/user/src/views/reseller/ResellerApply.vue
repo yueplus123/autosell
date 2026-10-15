@@ -59,6 +59,23 @@
         <!-- 申请表单 / 不可申请 -->
         <Card class="p-5 lg:col-span-2">
           <form v-if="state.modules.apply.enabled" class="space-y-4" @submit.prevent="submit">
+            <fieldset class="space-y-2">
+              <legend class="text-sm font-semibold text-foreground">{{ t('personalCenter.reseller.zoneTitle') }}</legend>
+              <div class="grid gap-2 sm:grid-cols-3">
+                <label
+                  v-for="opt in zoneOptions"
+                  :key="opt.value"
+                  class="flex cursor-pointer items-start gap-2.5 rounded-xl border p-3 text-sm transition-colors"
+                  :class="zoneScope === opt.value ? 'border-primary bg-primary/5' : 'hover:border-muted-foreground/40'"
+                >
+                  <input v-model="zoneScope" type="radio" name="zone_scope" :value="opt.value" class="mt-0.5 accent-[color:var(--primary)]" :disabled="submitting" />
+                  <span>
+                    <span class="block font-medium text-foreground">{{ opt.label }}</span>
+                    <span class="mt-0.5 block text-xs text-muted-foreground">{{ opt.desc }}</span>
+                  </span>
+                </label>
+              </div>
+            </fieldset>
             <Label class="block text-sm font-semibold text-foreground">
               {{ t('personalCenter.reseller.applyReasonPlaceholder') }}
             </Label>
@@ -107,6 +124,12 @@ const { t } = useI18n()
 const { loading, snapshot, state, load } = useResellerProfile()
 const submitting = ref(false)
 const reason = ref('')
+const zoneScope = ref<'all' | 'ai' | 'game'>('ai')
+const zoneOptions = computed(() => (['ai', 'game', 'all'] as const).map((value) => ({
+  value,
+  label: t(`personalCenter.reseller.zone.${value}`),
+  desc: t(`personalCenter.reseller.zone.${value}Desc`),
+})))
 const alert = ref<PageAlert | null>(null)
 
 const statusText = computed(() => {
@@ -149,7 +172,7 @@ const submit = async () => {
   alert.value = null
   submitting.value = true
   try {
-    await resellerAPI.apply({ reason: reason.value })
+    await resellerAPI.apply({ reason: reason.value, zone_scope: zoneScope.value })
     reason.value = ''
     await load()
     alert.value = { level: 'success', message: t('personalCenter.common.saveSuccess') }

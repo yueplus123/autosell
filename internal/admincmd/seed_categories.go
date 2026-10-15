@@ -35,6 +35,12 @@ var businessCategorySeed = []seedCategory{
 			{Slug: "claude", Name: seedName("Claude", "Claude", "Claude"), SortOrder: 30},
 			{Slug: "midjourney", Name: seedName("Midjourney", "Midjourney", "Midjourney"), SortOrder: 20},
 			{Slug: "ai-api", Name: seedName("API 额度", "API 額度", "API Credits"), SortOrder: 10},
+			{Slug: "grok", Name: seedName("Grok", "Grok", "Grok"), SortOrder: 9},
+			{Slug: "gemini", Name: seedName("Gemini", "Gemini", "Gemini"), SortOrder: 8},
+			{Slug: "apple-id", Name: seedName("海外 Apple ID", "海外 Apple ID", "Overseas Apple ID"), SortOrder: 7},
+			{Slug: "gift-card", Name: seedName("礼品卡", "禮品卡", "Gift Cards"), SortOrder: 6},
+			{Slug: "visa-mastercard", Name: seedName("Visa / 万事达", "Visa / 萬事達", "Visa / Mastercard"), SortOrder: 5},
+			{Slug: "gmail", Name: seedName("Gmail 邮箱", "Gmail 信箱", "Gmail"), SortOrder: 4},
 		},
 	},
 	{
