@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/mail"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/dujiao-next/internal/config"
@@ -456,4 +457,70 @@ func (s *Service) GetWalletRechargeChannelIDs() []uint {
 		return nil
 	}
 	return result
+}
+
+// SiteFieldShowcaseMode 主站展示模式开关（站点配置 site_config 中的字段）。
+// 开启后主站（非分销站）只做展示：公开接口不返回价格，购物车与下单接口拒绝请求；
+// 分销站不受影响，照常显示价格、下单、自动发货。默认开启。
+const SiteFieldShowcaseMode = "showcase_mode"
+
+// DefaultShowcaseMode 未配置时的默认值。
+const DefaultShowcaseMode = true
+
+func normalizeShowcaseMode(raw interface{}) bool {
+	switch v := raw.(type) {
+	case bool:
+		return v
+	case string:
+		switch strings.ToLower(strings.TrimSpace(v)) {
+		case "false", "0", "off", "no":
+			return false
+		case "true", "1", "on", "yes":
+			return true
+		}
+	case float64:
+		return v != 0
+	case int:
+		return v != 0
+	}
+	return DefaultShowcaseMode
+}
+
+const showcaseCacheTTL = 5 * time.Second
+
+type showcaseCache struct {
+	mu      sync.Mutex
+	value   bool
+	expires time.Time
+}
+
+var showcaseModeCache showcaseCache
+
+// IsShowcaseMode 返回主站展示模式是否开启。读取失败时按默认（开启）处理，宁可多隐藏价格。
+// 结果缓存几秒，避免每个商品列表和下单请求都查一次数据库。
+func (s *Service) IsShowcaseMode() bool {
+	if s == nil {
+		return DefaultShowcaseMode
+	}
+	showcaseModeCache.mu.Lock()
+	defer showcaseModeCache.mu.Unlock()
+	if time.Now().Before(showcaseModeCache.expires) {
+		return showcaseModeCache.value
+	}
+	result := DefaultShowcaseMode
+	if value, err := s.GetByKey(constants.SettingKeySiteConfig); err == nil && value != nil {
+		if raw, ok := value[SiteFieldShowcaseMode]; ok {
+			result = normalizeShowcaseMode(raw)
+		}
+	}
+	showcaseModeCache.value = result
+	showcaseModeCache.expires = time.Now().Add(showcaseCacheTTL)
+	return result
+}
+
+// invalidateShowcaseModeCache 在站点配置保存后调用，让新开关立即生效。
+func invalidateShowcaseModeCache() {
+	showcaseModeCache.mu.Lock()
+	showcaseModeCache.expires = time.Time{}
+	showcaseModeCache.mu.Unlock()
 }

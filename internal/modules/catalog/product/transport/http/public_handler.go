@@ -62,8 +62,14 @@ type RelatedPostReader interface {
 	ListPostsForProduct(ctx context.Context, productID uint, limit int) ([]contentcontract.RelatedPost, error)
 }
 
+// ShowcaseModeReader 读取主站展示模式开关。
+type ShowcaseModeReader interface {
+	IsShowcaseMode() bool
+}
+
 // PublicHandler 处理公开商品目录 HTTP 请求。
 type PublicHandler struct {
+	showcase     ShowcaseModeReader
 	products     PublicProductQueries
 	pricer       ResellerDisplayPricer
 	promotions   ProductPromotionDecorator
@@ -95,6 +101,21 @@ func NewPublicHandler(
 		skuMappings:  skuMappings,
 		relatedPosts: relatedPosts,
 	}
+}
+
+// SetShowcaseModeReader 注入主站展示模式开关；未注入时不隐藏价格。
+func (h *PublicHandler) SetShowcaseModeReader(reader ShowcaseModeReader) {
+	if h != nil {
+		h.showcase = reader
+	}
+}
+
+// shouldHidePrices 主站（非分销站）且展示模式开启时，公开接口不返回价格。
+func (h *PublicHandler) shouldHidePrices(tenant reseller.TenantContext) bool {
+	if h == nil || h.showcase == nil || isResellerTenant(tenant) {
+		return false
+	}
+	return h.showcase.IsShowcaseMode()
 }
 
 func tenantFromRequest(c *gin.Context) reseller.TenantContext {
@@ -141,6 +162,7 @@ func (h *PublicHandler) GetProducts(c *gin.Context) {
 		}
 	}
 
+	hidePrices := h.shouldHidePrices(tenant)
 	decorated := make([]productpresenter.Product, 0, len(products))
 	for i := range products {
 		item, derr := h.decoratePublicProductForTenant(&products[i], h.promotions, tenant, resellerBatch)
@@ -150,6 +172,9 @@ func (h *PublicHandler) GetProducts(c *gin.Context) {
 			}
 			ginutil.RespondError(c, response.CodeInternal, "error.product_fetch_failed", derr)
 			return
+		}
+		if hidePrices {
+			item.HidePrices()
 		}
 		decorated = append(decorated, item)
 	}
@@ -201,6 +226,10 @@ func (h *PublicHandler) GetProductBySlug(c *gin.Context) {
 		}
 		ginutil.RespondError(c, response.CodeInternal, "error.product_fetch_failed", derr)
 		return
+	}
+
+	if h.shouldHidePrices(tenant) {
+		decorated.HidePrices()
 	}
 
 	if posts, relatedErr := h.loadRelatedPostCards(c.Request.Context(), product.ID); relatedErr == nil {

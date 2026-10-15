@@ -19,6 +19,8 @@ type PublicHTTPDependencies struct {
 	Mappings     producthttp.LocalProductMappingReader
 	SKUMappings  producthttp.SKUMappingLookup
 	RelatedPosts producthttp.RelatedPostReader
+	// Showcase 主站展示模式开关，可为空（为空时不隐藏价格）
+	Showcase producthttp.ShowcaseModeReader
 }
 
 // publicProductAdapter 将 Product 查询服务和租户隐藏策略组合成公开查询端口。
@@ -52,7 +54,7 @@ func NewPublicHTTP(dependencies PublicHTTPDependencies) *producthttp.PublicHandl
 	if dependencies.Promotions != nil {
 		promotions = promotionapp.NewService(dependencies.Promotions)
 	}
-	return producthttp.NewPublicHandler(
+	handler := producthttp.NewPublicHandler(
 		publicProductAdapter{products: dependencies.Products, hidden: dependencies.Hidden},
 		dependencies.Pricer,
 		promotions,
@@ -61,4 +63,8 @@ func NewPublicHTTP(dependencies PublicHTTPDependencies) *producthttp.PublicHandl
 		dependencies.SKUMappings,
 		dependencies.RelatedPosts,
 	)
+	if dependencies.Showcase != nil {
+		handler.SetShowcaseModeReader(dependencies.Showcase)
+	}
+	return handler
 }

@@ -2,6 +2,7 @@ package settingsapp
 
 import (
 	"github.com/dujiao-next/internal/config"
+	"github.com/dujiao-next/internal/constants"
 	settingscontract "github.com/dujiao-next/internal/modules/settings/contract"
 	"github.com/dujiao-next/internal/shared/jsonmap"
 )
@@ -77,6 +78,9 @@ func (s *Service) UpdateWithEffects(key string, value map[string]interface{}) (U
 	stored, err := s.repo.Upsert(key, normalized)
 	if err != nil {
 		return UpdateResult{}, err
+	}
+	if key == constants.SettingKeySiteConfig {
+		invalidateShowcaseModeCache()
 	}
 	return UpdateResult{
 		Value:   stored,

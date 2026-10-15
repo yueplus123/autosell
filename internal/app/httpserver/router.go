@@ -107,6 +107,7 @@ func SetupRouter(cfg *config.Config, c *container.Container) *gin.Engine {
 		Mappings:     c.ProductMappingRepo,
 		SKUMappings:  c.SKUMappingRepo,
 		RelatedPosts: c.ContentPostService,
+		Showcase:     c.SettingService,
 	})
 	publicCategoryHandler := categoryhttp.NewPublicHandler(c.CategoryService)
 	adminContentHandler := contenttransport.NewAdminHandler(

@@ -53,6 +53,30 @@ type Product struct {
 	MemberPrices         []MemberLevelPrice `json:"member_prices,omitempty"`
 
 	RelatedPosts []RelatedPost `json:"related_posts,omitempty"`
+
+	// PriceHidden 为 true 表示主站展示模式：价格字段已被清空，前台不展示价格、不提供购买。
+	PriceHidden bool `json:"price_hidden,omitempty"`
+}
+
+// HidePrices 清空所有价格相关字段（主站展示模式使用），避免价格从接口泄露。
+func (p *Product) HidePrices() {
+	if p == nil {
+		return
+	}
+	p.PriceAmount = money.Amount{}
+	p.WholesalePrices = nil
+	p.PromotionID = nil
+	p.PromotionName = ""
+	p.PromotionType = ""
+	p.PromotionPriceAmount = nil
+	p.PromotionRules = nil
+	p.MemberPrices = nil
+	for i := range p.SKUs {
+		p.SKUs[i].PriceAmount = money.Amount{}
+		p.SKUs[i].PromotionPriceAmount = nil
+		p.SKUs[i].MemberPriceAmount = nil
+	}
+	p.PriceHidden = true
 }
 
 // RelatedPost 是商品详情中的关联文章轻量响应。

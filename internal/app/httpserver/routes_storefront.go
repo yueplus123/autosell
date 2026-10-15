@@ -68,6 +68,8 @@ func registerStorefrontRoutes(
 ) {
 	storefront := apiV1.Group("")
 	storefront.Use(middleware.ResellerTenantMiddleware(c.ResellerDomainResolver))
+	// 主站展示模式：主站不接受加购与下单，订单只来自分销站
+	storefront.Use(middleware.ShowcaseModeOrderGuard(c.SettingService))
 	affiliateHandler := affiliatebootstrap.NewStorefrontHandler(c)
 
 	// 公开接口

@@ -733,3 +733,43 @@ func TestNormalizeStorefrontTemplate(t *testing.T) {
 		}
 	}
 }
+
+func TestNormalizeShowcaseMode(t *testing.T) {
+	cases := []struct {
+		raw  interface{}
+		want bool
+	}{
+		{nil, true},
+		{true, true},
+		{false, false},
+		{"false", false},
+		{"off", false},
+		{"true", true},
+		{float64(0), false},
+		{float64(1), true},
+		{"garbage", true},
+	}
+	for _, tc := range cases {
+		if got := normalizeShowcaseMode(tc.raw); got != tc.want {
+			t.Errorf("normalizeShowcaseMode(%#v) = %v, want %v", tc.raw, got, tc.want)
+		}
+	}
+}
+
+func TestNormalizeSiteSettingDefaultsShowcaseModeOn(t *testing.T) {
+	normalized := normalizeSiteSetting(map[string]interface{}{})
+	if normalized[SiteFieldShowcaseMode] != true {
+		t.Fatalf("showcase_mode default = %#v, want true", normalized[SiteFieldShowcaseMode])
+	}
+	normalized = normalizeSiteSetting(map[string]interface{}{SiteFieldShowcaseMode: false})
+	if normalized[SiteFieldShowcaseMode] != false {
+		t.Fatalf("showcase_mode = %#v, want false", normalized[SiteFieldShowcaseMode])
+	}
+}
+
+func TestNilServiceShowcaseModeDefaultsOn(t *testing.T) {
+	var s *Service
+	if !s.IsShowcaseMode() {
+		t.Fatal("nil service should report showcase mode on")
+	}
+}

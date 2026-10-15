@@ -137,6 +137,8 @@ func (h *Handler) GetConfig(c *gin.Context) {
 			"qq":       "",
 		},
 		"scripts": make([]interface{}, 0),
+		// 主站展示模式默认开启：主站只展示，不显示价格、不能下单
+		"showcase_mode": true,
 	}
 
 	tenant, _ := reseller.TenantFromContext(c.Request.Context())
@@ -238,6 +240,11 @@ func (h *Handler) GetConfig(c *gin.Context) {
 		data = overlaid
 	} else if tenant.ResellerID == nil {
 		data["tenant"] = map[string]interface{}{"mode": "main", "host": tenant.Host}
+	}
+
+	// 展示模式只作用于主站，分销站始终可以看价格、下单
+	if tenant.IsReseller() {
+		data["showcase_mode"] = false
 	}
 
 	_ = h.cache.SetJSON(c.Request.Context(), cacheKey, data, publicConfigCacheTTL)
