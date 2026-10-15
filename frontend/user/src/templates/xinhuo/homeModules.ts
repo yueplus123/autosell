@@ -23,6 +23,8 @@ export interface ModuleTile {
   tone: ModuleTileTone
   /** 横向 logo（如 VISA）用更宽的图片区域 */
   wide?: boolean
+  /** 图标是否反色。默认黑色方块反色（适合 ChatGPT、Grok 这类黑色线稿 logo），彩色 logo 设为 false */
+  invertIcon?: boolean
   /** 背景光晕颜色 */
   glow: string
   product?: string
@@ -67,7 +69,7 @@ export const homeModules: HomeModule[] = [
       { key: 'grok', labelKey: 'xinhuo.modules.more.grok', subKey: 'xinhuo.modules.more.member', icon: 'grok.png', tone: 'dark', glow: 'rgba(168,85,247,0.4)', search: 'Grok' },
       { key: 'gemini', labelKey: 'xinhuo.modules.more.gemini', subKey: 'xinhuo.modules.more.member', icon: 'gemini.png', tone: 'light', glow: 'rgba(59,130,246,0.45)', search: 'Gemini' },
       { key: 'card', labelKey: 'xinhuo.modules.more.card', subKey: 'xinhuo.modules.more.cardSub', icon: 'visa.png', tone: 'light', wide: true, glow: 'rgba(37,99,235,0.45)', search: 'Visa' },
-      { key: 'gmail', labelKey: 'xinhuo.modules.more.gmail', subKey: 'xinhuo.modules.more.gmailSub', icon: 'gmail.png', tone: 'light', glow: 'rgba(239,68,68,0.35)', search: 'Gmail' },
+      { key: 'gmail', labelKey: 'xinhuo.modules.more.gmail', subKey: 'xinhuo.modules.more.gmailSub', icon: 'gmail.png', tone: 'dark', invertIcon: false, glow: 'rgba(239,68,68,0.4)', search: 'Gmail' },
     ],
   },
 ]

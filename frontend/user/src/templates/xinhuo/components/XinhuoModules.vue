@@ -20,7 +20,7 @@
             class="grid h-11 place-items-center rounded-[24%] sm:h-14"
             :class="[tile.wide ? 'w-20 sm:w-24' : 'w-11 sm:w-14', tile.tone === 'dark' ? 'border border-white/15 bg-black' : 'bg-[color:var(--xh-page)]']"
           >
-            <img :src="iconSrc(tile.icon)" alt="" class="object-contain" :class="[tile.wide ? 'h-[46%] w-[80%]' : 'h-[58%] w-[58%]', tile.tone === 'dark' ? 'invert' : '']" />
+            <img :src="iconSrc(tile.icon)" alt="" class="object-contain" :class="[tile.wide ? 'h-[46%] w-[80%]' : 'h-[58%] w-[58%]', shouldInvert(tile) ? 'invert' : '']" />
           </span>
           <div>
             <div class="text-[30px] font-black leading-none tracking-[-0.02em] sm:text-[44px]">{{ tileLabel(tile) }}</div>
@@ -70,5 +70,6 @@ import { homeModules, moduleTileLink, type ModuleTile } from '../homeModules'
 const { t } = useI18n()
 
 const iconSrc = (file: string) => HERO_ICON_BASE + file
+const shouldInvert = (tile: ModuleTile) => tile.invertIcon ?? tile.tone === 'dark'
 const tileLabel = (tile: ModuleTile) => tile.label ?? (tile.labelKey ? t(tile.labelKey) : '')
 </script>
