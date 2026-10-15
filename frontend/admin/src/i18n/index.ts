@@ -2720,7 +2720,7 @@ const messages = {
       settings: {
         showcase: {
           title: '主站展示模式',
-          desc: '开启后主站只做展示：不显示价格、不能进入商品详情、不能加购或下单，商品按钮变为「联系渠道合作」。分销站不受影响，照常显示价格、下单和自动发货。',
+          desc: '开启后主站只做展示：不显示价格、不能进入商品详情、不能加购或下单，商品卡片不显示购买按钮。分销站不受影响，照常显示价格、下单和自动发货。',
         },
         title: '系统设置',
         subtitle: '管理网站全局配置、SEO及法律条款',
@@ -7207,7 +7207,7 @@ const messages = {
       settings: {
         showcase: {
           title: '主站展示模式',
-          desc: '開啟後主站只做展示：不顯示價格、不能進入商品詳情、不能加購或下單，商品按鈕變為「聯繫渠道合作」。分銷站不受影響，照常顯示價格、下單和自動發貨。',
+          desc: '開啟後主站只做展示：不顯示價格、不能進入商品詳情、不能加購或下單，商品卡片不顯示購買按鈕。分銷站不受影響，照常顯示價格、下單和自動發貨。',
         },
         title: '系統設定',
         subtitle: '管理網站全局配置、SEO及法律條款',
@@ -11694,7 +11694,7 @@ const messages = {
       settings: {
         showcase: {
           title: 'Main site showcase mode',
-          desc: 'When on, the main site is a showcase only: no prices, no product details, no cart or checkout, and product buttons become Contact for partnership. Reseller sites are unaffected and keep prices, ordering and auto-delivery.',
+          desc: 'When on, the main site is a showcase only: no prices, no product details, no cart or checkout, and no buy buttons on product cards. Reseller sites are unaffected and keep prices, ordering and auto-delivery.',
         },
         title: 'Settings',
         subtitle: 'Manage site config, SEO and legal documents',

@@ -1,5 +1,5 @@
 <template>
-  <!-- 主站展示模式：卡片不可点进详情，不显示价格，按钮改为「联系渠道合作」 -->
+  <!-- 主站展示模式：卡片不可点进详情，不显示价格和购买按钮 -->
   <component
     :is="showcase ? 'div' : RouterLink"
     :to="showcase ? undefined : `/products/${product.slug}`"
@@ -27,18 +27,8 @@
       </p>
     </div>
 
-    <!-- 展示模式：联系渠道合作 -->
-    <div v-if="showcase" class="flex items-center justify-end max-sm:flex-none sm:mt-auto">
-      <button
-        type="button"
-        class="rounded-full px-[18px] py-2 text-sm font-medium transition max-sm:px-3.5 max-sm:py-1.5 max-sm:text-[13px]"
-        :class="buyTone"
-        @click="openContactModal()"
-      >{{ t('xinhuo.shop.partner') }}</button>
-    </div>
-
     <!-- 价格 + 购买 -->
-    <div v-else class="flex items-center justify-between max-sm:flex-none max-sm:flex-col max-sm:items-end max-sm:gap-1.5 sm:mt-auto">
+    <div v-if="!showcase" class="flex items-center justify-between max-sm:flex-none max-sm:flex-col max-sm:items-end max-sm:gap-1.5 sm:mt-auto">
       <div class="flex items-baseline gap-2 max-sm:flex-col max-sm:items-end max-sm:gap-0">
         <span class="text-[22px] font-semibold tabular-nums max-sm:text-base">{{ displayPrice }}</span>
         <span v-if="promo" class="text-[13px] text-[#86868b] line-through max-sm:text-[11px]">{{ originalPrice }}</span>
@@ -57,7 +47,6 @@ import { RouterLink } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { useAppStore } from '../../../stores/app'
 import { isMainShowcase } from '../../../utils/storefrontZone'
-import { openContactModal } from '../contactModal'
 import { getFirstImageUrl, getImageUrl } from '../../../utils/image'
 import { useLocalized, useProductLabels } from '../../../composables/useProduct'
 

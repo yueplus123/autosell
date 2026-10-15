@@ -1809,9 +1809,7 @@
       "soldOut": "已售罄",
       "viewAll": "查看全部商品",
       "empty": "暫無商品",
-      "emptySearch": "沒有找到相關商品",
-      "partner": "聯繫渠道合作",
-      "showcaseNote": "主站僅作展示，請聯繫我們洽談渠道合作"
+      "emptySearch": "沒有找到相關商品"
     },
     "why": {
       "title": "為什麼在{brand}購買。",

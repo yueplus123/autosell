@@ -1809,9 +1809,7 @@
       "soldOut": "Sold out",
       "viewAll": "View all products",
       "empty": "No products yet",
-      "emptySearch": "No matching products",
-      "partner": "Contact for partnership",
-      "showcaseNote": "This site is a showcase. Contact us to become a partner."
+      "emptySearch": "No matching products"
     },
     "why": {
       "title": "Why buy at {brand}.",
