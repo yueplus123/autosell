@@ -222,6 +222,8 @@ const form = reactive({
   footer_links: [] as FooterLinkItem[],
   storefront_template: 'classic' as 'classic' | 'vault' | 'xinhuo',
   template_mode: 'card' as 'card' | 'list',
+  // 主站展示模式：主站不显示价格、不能下单，订单只来自分销站（默认开启）
+  showcase_mode: true,
 })
 
 const smtpData = reactive({
@@ -458,6 +460,8 @@ const fetchSettings = async () => {
       const rawTemplateMode = String(data.template_mode || 'card').trim()
       form.template_mode = rawTemplateMode === 'list' ? 'list' : 'card'
 
+      form.showcase_mode = data.showcase_mode !== false
+
       const rawStorefrontTemplate = String(data.storefront_template || 'classic').trim()
       form.storefront_template = rawStorefrontTemplate === 'vault' || rawStorefrontTemplate === 'xinhuo' ? rawStorefrontTemplate : 'classic'
     }
@@ -620,6 +624,7 @@ const saveSiteSettings = async () => {
       footer_links: form.footer_links,
       storefront_template: form.storefront_template,
       template_mode: form.template_mode,
+      showcase_mode: form.showcase_mode,
     },
   }
   await adminAPI.updateSettings(payload)
@@ -1137,6 +1142,17 @@ onMounted(() => {
 
       <!-- Template Mode Tab -->
       <TabsContent value="template" :forceMount="true" v-show="currentTab === 'template'" class="space-y-6 mt-0">
+      <!-- 主站展示模式 -->
+      <div class="rounded-xl border border-border bg-card">
+        <div class="flex items-start justify-between gap-4 px-6 py-5">
+          <div>
+            <label for="showcase-mode" class="text-lg font-semibold">{{ t('admin.settings.showcase.title') }}</label>
+            <p class="mt-1 text-xs text-muted-foreground">{{ t('admin.settings.showcase.desc') }}</p>
+          </div>
+          <Switch id="showcase-mode" v-model="form.showcase_mode" />
+        </div>
+      </div>
+
       <!-- Storefront theme: classic / vault / xinhuo -->
       <div class="rounded-xl border border-border bg-card">
         <div class="flex flex-col gap-3 border-b border-border bg-muted/40 px-6 py-4">

@@ -5,7 +5,7 @@ import { useTelegramMiniAppStore } from '../stores/telegramMiniApp'
 import { captureAffiliateFromRoute } from '../utils/affiliate'
 import { templateView } from '../templates/registry'
 import { GOOGLE_REDIRECT_FRONTEND_CALLBACK_PATH } from '../utils/googleRedirect'
-import { rememberActiveZone, tenantLockedZone, zoneSearchPath } from '../utils/storefrontZone'
+import { currentZone, isMainShowcase, rememberActiveZone, tenantLockedZone, zoneSearchPath } from '../utils/storefrontZone'
 import { businessZonePath, isBusinessLineKey } from '../utils/businessLines'
 
 type RouteComponentLoader = () => Promise<unknown>
@@ -357,6 +357,23 @@ router.beforeEach(async (to, _from, next) => {
             return
         }
     }
+    // ===== 主站展示模式 =====
+    // 主站只做展示：不能进入商品详情、全部商品、分类页、购物车和结算，统一回到专区（或首页）。
+    // 支付页 /pay 保留，用于开启展示模式之前已创建的订单继续付款。
+    if (isMainShowcase(appStore.config as any)) {
+        const blocked = ['product-detail', 'products', 'category-products', 'cart', 'checkout']
+        if (blocked.includes(String(to.name || ''))) {
+            const zone = currentZone(appStore.config as any)
+            const search = typeof to.query.search === 'string' ? to.query.search : ''
+            if (search) {
+                next(zoneSearchPath(zone ?? 'ai', search))
+            } else {
+                next(zone ? businessZonePath(zone) : '/')
+            }
+            return
+        }
+    }
+
     // 进入专区后记住它，站内「返回首页 / 继续购物」都回到这个专区
     if (to.name === 'business-zone' && isBusinessLineKey(String(to.params.key || ''))) {
         rememberActiveZone(String(to.params.key) as 'ai' | 'game')

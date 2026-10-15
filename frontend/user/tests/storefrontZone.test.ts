@@ -9,14 +9,16 @@ const store = new Map<string, string>()
   removeItem: (k: string) => void store.delete(k),
 }
 
-const { tenantLockedZone, storefrontHomePath, storefrontShopPath, rememberActiveZone, zoneSearchPath } = await import('../src/utils/storefrontZone.ts')
+const { tenantLockedZone, storefrontHomePath, storefrontShopPath, rememberActiveZone, zoneSearchPath, isMainShowcase } = await import('../src/utils/storefrontZone.ts')
 
 test('main site without an active zone keeps normal home and shop paths', () => {
   store.clear()
-  const config = { tenant: { mode: 'main' } }
+  const config = { tenant: { mode: 'main' }, showcase_mode: false }
   assert.equal(tenantLockedZone(config), null)
   assert.equal(storefrontHomePath(config), '/')
   assert.equal(storefrontShopPath(config), '/products')
+  // 展示模式下没有全部商品页，回到首页
+  assert.equal(storefrontShopPath({ tenant: { mode: 'main' } }), '/')
 })
 
 test('after entering a zone, home and shop links point back into it', () => {
@@ -44,4 +46,13 @@ test('all-zone reseller is not locked', () => {
 test('zone search path encodes keyword', () => {
   assert.equal(zoneSearchPath('ai', ' ChatGPT Plus '), '/zone/ai?q=ChatGPT%20Plus')
   assert.equal(zoneSearchPath('ai', ''), '/zone/ai')
+})
+
+test('主站展示模式：主站默认开启，分销站永远关闭', () => {
+  assert.equal(isMainShowcase(null), false)
+  assert.equal(isMainShowcase({ tenant: { mode: 'main' } }), true)
+  assert.equal(isMainShowcase({ tenant: { mode: 'main' }, showcase_mode: true }), true)
+  assert.equal(isMainShowcase({ tenant: { mode: 'main' }, showcase_mode: false }), false)
+  assert.equal(isMainShowcase({}), true)
+  assert.equal(isMainShowcase({ tenant: { mode: 'reseller' }, showcase_mode: true }), false)
 })

@@ -12,6 +12,17 @@ const ACTIVE_ZONE_KEY = 'xh-active-zone'
 
 interface ConfigLike {
   tenant?: { mode?: unknown; zone_scope?: unknown } | null
+  showcase_mode?: unknown
+}
+
+/**
+ * 主站展示模式：主站（非分销站）只展示商品，不显示价格、不能进入详情和下单，
+ * 订单都来自分销站。由后台「系统设置 → 主站展示模式」控制，默认开启；分销站永远不是展示模式。
+ */
+export const isMainShowcase = (config: ConfigLike | null | undefined): boolean => {
+  if (!config) return false
+  if (String(config.tenant?.mode || '') === 'reseller') return false
+  return config.showcase_mode !== false
 }
 
 /** 分站只代理一个专区时返回该专区，否则返回 null（主站或代理全部专区） */
@@ -52,7 +63,8 @@ export const storefrontHomePath = (config: ConfigLike | null | undefined): strin
 /** 「全部商品」类入口应指向的地址：在专区内时回到专区，否则为全部商品页 */
 export const storefrontShopPath = (config: ConfigLike | null | undefined): string => {
   const zone = currentZone(config)
-  return zone ? businessZonePath(zone) : '/products'
+  if (zone) return businessZonePath(zone)
+  return isMainShowcase(config) ? '/' : '/products'
 }
 
 /** 专区内的搜索地址 */

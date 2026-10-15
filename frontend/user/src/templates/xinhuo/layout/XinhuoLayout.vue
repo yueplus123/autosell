@@ -31,7 +31,8 @@
         </nav>
 
         <div class="ml-auto flex items-center gap-1 sm:gap-2">
-          <RouterLink to="/cart" class="relative grid h-10 w-10 place-items-center rounded-full text-[#d2d2d7] transition-colors hover:bg-white/10 hover:text-white" :aria-label="t('navbar.cart')">
+          <!-- 主站展示模式不能下单，不显示购物车 -->
+          <RouterLink v-if="!showcase" to="/cart" class="relative grid h-10 w-10 place-items-center rounded-full text-[#d2d2d7] transition-colors hover:bg-white/10 hover:text-white" :aria-label="t('navbar.cart')">
             <ShoppingBag class="h-[19px] w-[19px]" />
             <span v-if="cartCount > 0" class="absolute right-0.5 top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[color:var(--xh-accent)] px-1 text-[11px] font-bold text-white">{{ cartCount }}</span>
           </RouterLink>
@@ -113,6 +114,9 @@
         </span>
       </div>
     </footer>
+
+    <!-- 全站共用的联系方式弹窗（「快速响应」「联系渠道合作」都打开它） -->
+    <XinhuoContactModal />
   </div>
 </template>
 
@@ -124,6 +128,8 @@ import { useAppStore } from '../../../stores/app'
 import { useCartStore } from '../../../stores/cart'
 import { useUserAuthStore } from '../../../stores/userAuth'
 import { useStorefrontLinks } from '../../../composables/useStorefrontLinks'
+import { isMainShowcase } from '../../../utils/storefrontZone'
+import XinhuoContactModal from '../components/XinhuoContactModal.vue'
 import { getImageUrl } from '../../../utils/image'
 import { getLocalizedText } from '../../../utils/resellerSiteConfig'
 import '../styles/xinhuo.css'
@@ -152,6 +158,7 @@ const brandDescription = computed(() => {
 
 // 顶栏 logo：在专区里（或分站只代理一个专区）时回到专区，而不是总首页
 const { homePath } = useStorefrontLinks()
+const showcase = computed(() => isMainShowcase(appStore.config as any))
 
 // 订单查询是独立页面（游客凭邮箱 + 订单密码查询，登录用户可在个人中心查看）
 const lookupTarget = '/guest/orders'
