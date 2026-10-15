@@ -34,6 +34,8 @@ export interface ModuleTile {
 export interface HomeModule {
   key: string
   layout: 'square' | 'banner'
+  /** 方块布局时电脑端每行几个（默认 4；2 时每个占一半，方块改为横向比例） */
+  desktopColumns?: 2 | 4
   titleKey: string
   descKey?: string
   tiles: ModuleTile[]
@@ -64,6 +66,7 @@ export const homeModules: HomeModule[] = [
   {
     key: 'more',
     layout: 'square',
+    desktopColumns: 2,
     titleKey: 'xinhuo.modules.more.title',
     tiles: [
       { key: 'grok', labelKey: 'xinhuo.modules.more.grok', subKey: 'xinhuo.modules.more.member', icon: 'grok.png', tone: 'dark', glow: 'rgba(168,85,247,0.4)', search: 'Grok' },

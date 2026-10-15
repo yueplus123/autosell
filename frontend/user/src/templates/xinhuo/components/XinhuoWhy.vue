@@ -3,7 +3,8 @@
     <h2 class="text-2xl font-black sm:text-[32px]">{{ t('xinhuo.why.title', { brand: brandName }) }}</h2>
     <p class="mb-4 mt-1.5 text-[15px] text-[color:var(--xh-muted)] sm:mb-6 sm:text-[17px]">{{ t('xinhuo.why.subtitle') }}</p>
 
-    <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fit,minmax(240px,1fr))] sm:gap-5">
+    <!-- 手机和电脑都是一排 2 个，4 项分 2 行 -->
+    <div class="grid grid-cols-2 gap-2.5 sm:gap-5">
       <component
         :is="item.contact ? 'button' : 'div'"
         v-for="(item, idx) in items"

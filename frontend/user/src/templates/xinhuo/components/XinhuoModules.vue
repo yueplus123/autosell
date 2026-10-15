@@ -6,14 +6,14 @@
         <p v-if="mod.descKey" class="mt-1.5 text-[14px] text-[color:var(--xh-muted)] sm:text-[16px]">{{ t(mod.descKey) }}</p>
       </div>
 
-      <!-- 方块：手机 2 列，桌面 4 列 -->
-      <div v-if="mod.layout === 'square'" class="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+      <!-- 方块：手机 2 列；电脑默认 4 列，desktopColumns 为 2 时每个占一半 -->
+      <div v-if="mod.layout === 'square'" class="grid grid-cols-2 gap-3 sm:gap-5" :class="mod.desktopColumns === 2 ? '' : 'lg:grid-cols-4'">
         <RouterLink
           v-for="tile in mod.tiles"
           :key="tile.key"
           :to="moduleTileLink(tile)"
           class="group relative isolate flex aspect-square flex-col justify-between overflow-hidden rounded-[22px] p-4 transition duration-300 hover:-translate-y-1 sm:rounded-[28px] sm:p-6"
-          :class="tile.tone === 'dark' ? 'bg-[#0b0b0c] text-white' : 'bg-white text-[color:var(--xh-ink)]'"
+          :class="[tile.tone === 'dark' ? 'bg-[#0b0b0c] text-white' : 'bg-white text-[color:var(--xh-ink)]', mod.desktopColumns === 2 ? 'lg:aspect-[2/1] lg:p-8' : '']"
         >
           <span class="pointer-events-none absolute -right-10 -top-10 -z-10 h-40 w-40 rounded-full opacity-70 blur-3xl transition-opacity duration-300 group-hover:opacity-100" :style="{ background: tile.glow }"></span>
           <span
