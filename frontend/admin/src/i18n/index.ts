@@ -1512,6 +1512,17 @@ const messages = {
         },
       },
       products: {
+        zoneBatch: {
+          open: '按专区设置购买类型',
+          title: '把',
+          allTo: '的全部商品设为',
+          apply: '应用',
+          running: '处理中...',
+          hint: '会员购买：只有注册登录的用户能下单；游客购买：不注册也能下单（登录用户同样可以买）。只影响已经选了上架专区的商品。',
+          confirm: '确定把「{zone}」的全部商品设为「{type}」吗？',
+          empty: '「{zone}」下还没有商品',
+          result: '「{zone}」已有 {success}/{total} 个商品设为「{type}」',
+        },
         zone: {
           label: '上架专区',
           ai: 'AI 专区',
@@ -1724,6 +1735,9 @@ const messages = {
           skuNeedActive: '至少需要启用一个 SKU',
         },
         batch: {
+          purchaseTypePlaceholder: '购买类型',
+          setPurchaseType: '修改购买类型',
+          purchaseTypeResult: '已修改 {success}/{total} 个商品的购买类型',
           selected: '已选 {count} 个商品',
           activate: '批量上架',
           deactivate: '批量下架',
@@ -5981,6 +5995,17 @@ const messages = {
         },
       },
       products: {
+        zoneBatch: {
+          open: '按專區設定購買類型',
+          title: '把',
+          allTo: '的全部商品設為',
+          apply: '套用',
+          running: '處理中...',
+          hint: '會員購買：只有註冊登入的用戶能下單；遊客購買：不註冊也能下單（登入用戶同樣可以買）。只影響已經選了上架專區的商品。',
+          confirm: '確定把「{zone}」的全部商品設為「{type}」嗎？',
+          empty: '「{zone}」下還沒有商品',
+          result: '「{zone}」已有 {success}/{total} 個商品設為「{type}」',
+        },
         zone: {
           label: '上架專區',
           ai: 'AI 專區',
@@ -6193,6 +6218,9 @@ const messages = {
           skuNeedActive: '至少需要啟用一個 SKU',
         },
         batch: {
+          purchaseTypePlaceholder: '購買類型',
+          setPurchaseType: '修改購買類型',
+          purchaseTypeResult: '已修改 {success}/{total} 個商品的購買類型',
           selected: '已選 {count} 個商品',
           activate: '批量上架',
           deactivate: '批量下架',
@@ -10450,6 +10478,17 @@ const messages = {
         },
       },
       products: {
+        zoneBatch: {
+          open: 'Set purchase type by zone',
+          title: 'Set all products in',
+          allTo: 'to',
+          apply: 'Apply',
+          running: 'Working...',
+          hint: 'Members only: buyers must register and sign in. Guests allowed: anyone can order without an account (signed-in users too). Only affects products assigned to a zone.',
+          confirm: 'Set every product in "{zone}" to "{type}"?',
+          empty: 'No products in "{zone}" yet',
+          result: '{success}/{total} products in "{zone}" set to "{type}"',
+        },
         zone: {
           label: 'Listing zone',
           ai: 'AI zone',
@@ -10662,6 +10701,9 @@ const messages = {
           skuNeedActive: 'At least one SKU must be active',
         },
         batch: {
+          purchaseTypePlaceholder: 'Purchase type',
+          setPurchaseType: 'Set purchase type',
+          purchaseTypeResult: 'Updated purchase type for {success}/{total} products',
           selected: '{count} selected',
           activate: 'Batch Activate',
           deactivate: 'Batch Deactivate',

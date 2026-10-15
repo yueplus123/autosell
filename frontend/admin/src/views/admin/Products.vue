@@ -21,6 +21,7 @@ import { confirmAction } from '@/utils/confirm'
 import ProductEditModal from './components/ProductEditModal.vue'
 import { buildAdminCategoryPath, createAdminCategoryMap, createAdminCategoryChildCountMap, flattenAdminCategories, isAdminProductCategorySelectable } from '@/utils/category'
 import { formatWholesaleTierScopeLabel, wholesaleTierScopeValue } from '@/utils/wholesalePricing'
+import { STORE_ZONES, zoneOfCategory, type StoreZone } from '@/utils/zone'
 
 const { t, locale } = useI18n()
 const loading = ref(false)
@@ -54,6 +55,68 @@ const pagination = reactive({
 const selectedIds = ref<Set<number>>(new Set())
 const batchOperating = ref(false)
 const batchCategoryId = ref('')
+const batchPurchaseType = ref('')
+
+// 按专区批量设置购买类型（不受当前页 / 筛选限制，作用于该专区下的全部商品）
+const zonePurchase = reactive<{ open: boolean; zone: string; type: string; running: boolean }>({
+  open: false,
+  zone: 'ai',
+  type: 'member',
+  running: false,
+})
+const BATCH_CHUNK = 200
+
+const toPurchaseType = (value: string): 'member' | 'guest' => (value === 'guest' ? 'guest' : 'member')
+
+const updatePurchaseTypeInChunks = async (ids: number[], type: 'member' | 'guest') => {
+  let success = 0
+  for (let i = 0; i < ids.length; i += BATCH_CHUNK) {
+    const res = await adminAPI.batchUpdateProductPurchaseType(ids.slice(i, i + BATCH_CHUNK), type)
+    success += Number(res.data?.data?.success_count || 0)
+  }
+  return success
+}
+
+const handleBatchPurchaseType = async () => {
+  const ids = Array.from(selectedIds.value)
+  if (!ids.length || !batchPurchaseType.value) return
+  batchOperating.value = true
+  try {
+    const success = await updatePurchaseTypeInChunks(ids, toPurchaseType(batchPurchaseType.value))
+    notifySuccess(t('admin.products.batch.purchaseTypeResult', { success, total: ids.length }))
+    selectedIds.value = new Set()
+    batchPurchaseType.value = ''
+    await fetchProducts({ preserveRows: true })
+  } catch (err: any) { notifyError(err?.response?.data?.message || err?.message) } finally { batchOperating.value = false }
+}
+
+const handleZonePurchaseType = async () => {
+  const zone: StoreZone = zonePurchase.zone === 'game' ? 'game' : 'ai'
+  const zoneLabel = t(`admin.products.zone.${zone}`)
+  const typeLabel = t(`admin.products.purchaseType.${zonePurchase.type}`)
+  const confirmed = await confirmAction({ description: t('admin.products.zoneBatch.confirm', { zone: zoneLabel, type: typeLabel }) })
+  if (!confirmed) return
+  zonePurchase.running = true
+  try {
+    // 逐页取出全部商品，按分类判断属于哪个专区
+    const ids: number[] = []
+    for (let page = 1; page <= 200; page++) {
+      const res = await adminAPI.getProducts({ page, page_size: 100 })
+      const rows: AdminProduct[] = res.data?.data || []
+      rows.forEach((p) => { if (zoneOfCategory(p.category_id, categories.value) === zone) ids.push(p.id) })
+      const totalPage = Number(res.data?.pagination?.total_page || 0)
+      if (!rows.length || page >= totalPage) break
+    }
+    if (!ids.length) {
+      notifyError(t('admin.products.zoneBatch.empty', { zone: zoneLabel }))
+      return
+    }
+    const success = await updatePurchaseTypeInChunks(ids, toPurchaseType(zonePurchase.type))
+    notifySuccess(t('admin.products.zoneBatch.result', { zone: zoneLabel, type: typeLabel, success, total: ids.length }))
+    zonePurchase.open = false
+    await fetchProducts({ preserveRows: true })
+  } catch (err: any) { notifyError(err?.response?.data?.message || err?.message) } finally { zonePurchase.running = false }
+}
 
 const allSelected = computed(() => products.value.length > 0 && products.value.every((p) => selectedIds.value.has(p.id)))
 
@@ -491,7 +554,31 @@ watch(
   <div class="space-y-6">
     <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
       <h1 class="text-2xl font-semibold">{{ t('admin.products.title') }}</h1>
-      <Button class="w-full sm:w-auto" @click="openCreateModal">{{ t('admin.products.create') }}</Button>
+      <div class="flex flex-col gap-2 sm:flex-row">
+        <Button variant="outline" class="w-full sm:w-auto" @click="zonePurchase.open = !zonePurchase.open">{{ t('admin.products.zoneBatch.open') }}</Button>
+        <Button class="w-full sm:w-auto" @click="openCreateModal">{{ t('admin.products.create') }}</Button>
+      </div>
+    </div>
+
+    <!-- 按专区批量设置购买类型 -->
+    <div v-if="zonePurchase.open" class="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:flex-wrap sm:items-center">
+      <span class="text-sm font-medium">{{ t('admin.products.zoneBatch.title') }}</span>
+      <Select v-model="zonePurchase.zone">
+        <SelectTrigger class="h-9 w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem v-for="z in STORE_ZONES" :key="z" :value="z">{{ t(`admin.products.zone.${z}`) }}</SelectItem>
+        </SelectContent>
+      </Select>
+      <span class="text-sm text-muted-foreground">{{ t('admin.products.zoneBatch.allTo') }}</span>
+      <Select v-model="zonePurchase.type">
+        <SelectTrigger class="h-9 w-full sm:w-[160px]"><SelectValue /></SelectTrigger>
+        <SelectContent>
+          <SelectItem value="member">{{ t('admin.products.purchaseType.member') }}</SelectItem>
+          <SelectItem value="guest">{{ t('admin.products.purchaseType.guest') }}</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button :disabled="zonePurchase.running" @click="handleZonePurchaseType">{{ zonePurchase.running ? t('admin.products.zoneBatch.running') : t('admin.products.zoneBatch.apply') }}</Button>
+      <p class="w-full text-xs text-muted-foreground">{{ t('admin.products.zoneBatch.hint') }}</p>
     </div>
 
     <div class="rounded-xl border border-border bg-card p-4 shadow-sm">
@@ -595,6 +682,16 @@ watch(
             </SelectContent>
           </Select>
           <Button size="sm" variant="outline" :disabled="batchOperating || !batchCategoryId" @click="handleBatchCategory">{{ t('admin.products.batch.moveCategory') }}</Button>
+        </div>
+        <div class="flex items-center gap-1">
+          <Select v-model="batchPurchaseType">
+            <SelectTrigger class="h-8 w-[140px] text-xs"><SelectValue :placeholder="t('admin.products.batch.purchaseTypePlaceholder')" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="member">{{ t('admin.products.purchaseType.member') }}</SelectItem>
+              <SelectItem value="guest">{{ t('admin.products.purchaseType.guest') }}</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button size="sm" variant="outline" :disabled="batchOperating || !batchPurchaseType" @click="handleBatchPurchaseType">{{ t('admin.products.batch.setPurchaseType') }}</Button>
         </div>
         <Button size="sm" variant="destructive" :disabled="batchOperating" @click="handleBatchDelete">{{ t('admin.products.batch.delete') }}</Button>
       </div>

@@ -460,3 +460,59 @@ func TestAdminProductListFiltersByActiveState(t *testing.T) {
 		t.Fatalf("is_active=0 + non-matching search should be empty, got %+v", got)
 	}
 }
+
+func TestBatchUpdateProductPurchaseType(t *testing.T) {
+	h, db := setupAdminProductHandlerTest(t)
+
+	product := productdomain.Product{
+		Slug:         "batch-purchase-type-product",
+		TitleJSON:    jsonmap.JSON{"zh-CN": "batch-purchase-type-product"},
+		PriceAmount:  money.FromDecimal(decimal.NewFromInt(10)),
+		PurchaseType: constants.ProductPurchaseMember,
+	}
+	if err := db.Create(&product).Error; err != nil {
+		t.Fatalf("create product failed: %v", err)
+	}
+
+	call := func(body string) *httptest.ResponseRecorder {
+		req := httptest.NewRequest(http.MethodPost, "/api/v1/admin/products/batch-purchase-type", strings.NewReader(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+		c, _ := gin.CreateTestContext(w)
+		c.Request = req
+		h.BatchUpdateProductPurchaseType(c)
+		return w
+	}
+
+	_ = call(fmt.Sprintf(`{"ids":[%d],"purchase_type":"everyone"}`, product.ID))
+	var unchanged productdomain.Product
+	db.First(&unchanged, product.ID)
+	if unchanged.PurchaseType != constants.ProductPurchaseMember {
+		t.Fatalf("invalid purchase type must not change product, got %q", unchanged.PurchaseType)
+	}
+
+	w := call(fmt.Sprintf(`{"ids":[%d, 999999],"purchase_type":"guest"}`, product.ID))
+	if w.Code != http.StatusOK {
+		t.Fatalf("expected status 200, got %d body=%s", w.Code, w.Body.String())
+	}
+	var resp struct {
+		Data struct {
+			Total        int `json:"total"`
+			SuccessCount int `json:"success_count"`
+			FailedItems  []struct {
+				ID uint `json:"id"`
+			} `json:"failed_items"`
+		} `json:"data"`
+	}
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("decode response failed: %v body=%s", err, w.Body.String())
+	}
+	if resp.Data.Total != 2 || resp.Data.SuccessCount != 1 || len(resp.Data.FailedItems) != 1 || resp.Data.FailedItems[0].ID != 999999 {
+		t.Fatalf("unexpected result: %+v", resp.Data)
+	}
+	var updated productdomain.Product
+	db.First(&updated, product.ID)
+	if updated.PurchaseType != constants.ProductPurchaseGuest {
+		t.Fatalf("expected guest, got %q", updated.PurchaseType)
+	}
+}

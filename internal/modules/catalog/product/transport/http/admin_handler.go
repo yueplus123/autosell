@@ -710,6 +710,38 @@ func (h *AdminProductHandler) BatchUpdateProductCategory(c *gin.Context) {
 	response.Success(c, gin.H{"total": len(req.IDs), "success_count": successCount})
 }
 
+// BatchProductPurchaseTypeRequest 批量修改购买类型（member：仅注册用户可买；guest：游客也可买）
+type BatchProductPurchaseTypeRequest struct {
+	IDs          []uint `json:"ids" binding:"required,min=1"`
+	PurchaseType string `json:"purchase_type" binding:"required"`
+}
+
+// BatchUpdateProductPurchaseType 批量修改购买类型
+func (h *AdminProductHandler) BatchUpdateProductPurchaseType(c *gin.Context) {
+	var req BatchProductPurchaseTypeRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		ginutil.RespondBindError(c, err)
+		return
+	}
+	purchaseType := productdomain.NormalizePurchaseType(req.PurchaseType)
+	if purchaseType == "" || strings.TrimSpace(req.PurchaseType) == "" {
+		ginutil.RespondError(c, response.CodeBadRequest, "error.bad_request", nil)
+		return
+	}
+	locale := i18n.ResolveLocale(c)
+	successCount := 0
+	failedItems := make([]batchProductFailureItem, 0)
+	for _, id := range req.IDs {
+		_, err := h.admin.QuickUpdate(strconv.FormatUint(uint64(id), 10), map[string]interface{}{"purchase_type": purchaseType})
+		if err == nil {
+			successCount++
+		} else {
+			failedItems = append(failedItems, productBatchFailureFromError(locale, id, err))
+		}
+	}
+	response.Success(c, gin.H{"total": len(req.IDs), "success_count": successCount, "failed_items": failedItems})
+}
+
 // BatchDeleteProducts 批量删除商品
 func (h *AdminProductHandler) BatchDeleteProducts(c *gin.Context) {
 	var req BatchProductActionRequest

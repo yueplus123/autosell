@@ -352,6 +352,7 @@ export const adminAPI = {
   deleteProduct: (id: number) => api.delete(`/admin/products/${id}`),
   batchUpdateProductStatus: (ids: number[], isActive: boolean) => api.post('/admin/products/batch-status', { ids, is_active: isActive }),
   batchUpdateProductCategory: (ids: number[], categoryId: number) => api.post('/admin/products/batch-category', { ids, category_id: categoryId }),
+  batchUpdateProductPurchaseType: (ids: number[], purchaseType: 'member' | 'guest') => api.post('/admin/products/batch-purchase-type', { ids, purchase_type: purchaseType }),
   batchDeleteProducts: (ids: number[]) => api.post('/admin/products/batch-delete', { ids }),
   getCategories: (params?: Record<string, unknown>) => api.get('/admin/categories', { params }),
   createCategory: (data: Partial<AdminCategory>) => api.post('/admin/categories', data),
