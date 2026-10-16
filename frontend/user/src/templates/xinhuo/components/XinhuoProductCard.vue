@@ -3,7 +3,7 @@
   <component
     :is="showcase ? 'div' : RouterLink"
     :to="showcase ? undefined : `/products/${product.slug}`"
-    class="group flex rounded-[20px] bg-white text-[color:var(--xh-ink)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] max-sm:items-center max-sm:gap-3 max-sm:rounded-2xl max-sm:p-3.5 sm:min-h-[236px] sm:flex-col sm:gap-3.5 sm:p-[22px]"
+    class="group flex min-w-0 rounded-[20px] bg-white text-[color:var(--xh-ink)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] max-sm:items-center max-sm:gap-3 max-sm:rounded-2xl max-sm:p-3.5 sm:min-h-[236px] sm:flex-col sm:gap-3.5 sm:p-[22px]"
   >
     <!-- 图标 + 标签 -->
     <div class="flex items-start justify-between max-sm:contents">

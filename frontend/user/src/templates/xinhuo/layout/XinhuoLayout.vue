@@ -1,5 +1,5 @@
 <template>
-  <div class="xinhuo-scope flex min-h-screen flex-col">
+  <div class="xinhuo-scope flex min-h-screen flex-col overflow-x-clip">
     <!-- 公告条：读取后台首页公告（标题），可当次会话关闭 -->
     <div v-if="announcementText && !announcementClosed" class="bg-[color:var(--xh-accent)] text-[13px] text-white">
       <div class="relative mx-auto flex w-full max-w-[1200px] items-center justify-center gap-3 px-12 py-2 text-center">
@@ -210,9 +210,12 @@ const onDocClick = (e: MouseEvent) => {
 onMounted(() => {
   document.addEventListener('click', onDocClick)
   document.body.classList.add('xinhuo-tokens')
+  // 薪火模板只有浅色设计：告诉手机浏览器不要强制深色（否则白卡片被涂黑、标题看不清）
+  document.documentElement.style.colorScheme = 'only light'
 })
 onUnmounted(() => {
   document.removeEventListener('click', onDocClick)
   document.body.classList.remove('xinhuo-tokens')
+  document.documentElement.style.colorScheme = ''
 })
 </script>

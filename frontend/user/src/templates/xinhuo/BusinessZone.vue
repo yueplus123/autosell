@@ -128,10 +128,10 @@
         <span v-if="!loading && total > 0" class="text-sm text-[color:var(--xh-muted)]">{{ t('zonePage.count', { n: total }) }}</span>
       </div>
 
-      <div v-if="loading" class="grid gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5">
+      <div v-if="loading" class="grid grid-cols-1 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5">
         <div v-for="n in 8" :key="`sk-${n}`" class="h-[86px] animate-pulse rounded-2xl bg-white sm:h-[236px] sm:rounded-[20px]"></div>
       </div>
-      <div v-else-if="products.length" class="grid gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5">
+      <div v-else-if="products.length" class="grid grid-cols-1 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(260px,1fr))] sm:gap-5">
         <XinhuoProductCard v-for="(product, idx) in products" :key="product.id" :product="product" :index="idx" :tone="zoneKey" />
       </div>
       <div v-else class="flex flex-col items-center gap-3 rounded-[24px] bg-white px-6 py-16 text-center">
