@@ -1,5 +1,5 @@
 <template>
-  <!-- 主站展示模式：卡片不可点进详情，不显示价格和购买按钮 -->
+  <!-- 主站展示模式：卡片不可点进详情，不显示价格、库存和购买按钮，缺货也按正常样式展示 -->
   <component
     :is="showcase ? 'div' : RouterLink"
     :to="showcase ? undefined : `/products/${product.slug}`"
@@ -22,7 +22,7 @@
       <p v-if="summary" class="mt-1.5 line-clamp-2 text-sm text-[color:var(--xh-muted)] max-sm:mt-0.5 max-sm:line-clamp-1 max-sm:text-xs">{{ summary }}</p>
       <p class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[color:var(--xh-muted)] max-sm:mt-1 max-sm:text-[11px]">
         <span class="sm:hidden">{{ fulfillmentLabel }}</span>
-        <span>{{ stockLabel }}</span>
+        <span v-if="!showcase">{{ stockLabel }}</span>
         <span v-if="categoryName">{{ categoryName }}</span>
       </p>
     </div>
