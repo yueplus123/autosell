@@ -18,6 +18,7 @@ type PostResp struct {
 	Summary         jsonmap.JSON         `json:"summary"`
 	Content         jsonmap.JSON         `json:"content"`
 	Thumbnail       string               `json:"thumbnail,omitempty"`
+	CategoryID      *uint                `json:"category_id,omitempty"`
 	PublishedAt     *time.Time           `json:"published_at"`
 	RelatedProducts []RelatedProductCard `json:"related_products,omitempty"`
 }
@@ -63,6 +64,7 @@ func NewPostResp(p *contentdomain.Post) PostResp {
 		Summary:     p.SummaryJSON,
 		Content:     p.ContentJSON,
 		Thumbnail:   p.Thumbnail,
+		CategoryID:  p.CategoryID,
 		PublishedAt: p.PublishedAt,
 	}
 	// 排除：IsPublished(内部状态)、CreatedAt

@@ -1,7 +1,7 @@
 <template>
   <div class="xinhuo-scope flex min-h-screen flex-col overflow-x-clip">
     <!-- 公告条：读取后台首页公告（标题），可当次会话关闭 -->
-    <div v-if="announcementText && !announcementClosed" class="bg-[color:var(--xh-accent)] text-[13px] text-white">
+    <div v-if="announcementText && !announcementClosed && !immersive" class="bg-[color:var(--xh-accent)] text-[13px] text-white">
       <div class="relative mx-auto flex w-full max-w-[1200px] items-center justify-center gap-3 px-12 py-2 text-center">
         <span class="flex-none rounded-full bg-white/20 px-2 py-0.5 text-xs font-medium">{{ t('xinhuo.announcementTag') }}</span>
         <span class="truncate">{{ announcementText }}</span>
@@ -14,9 +14,15 @@
       </div>
     </div>
 
-    <!-- 黑色顶栏 -->
-    <header class="sticky top-0 z-50 border-b border-[#1c1c1f] bg-black text-[#f5f5f7]">
-      <div class="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-6 px-4 sm:px-6">
+    <!-- 黑色顶栏；官网首页（Ethereal 风格）时变成浮在壁纸上的毛玻璃顶栏 -->
+    <header
+      class="z-50 text-[#f5f5f7]"
+      :class="immersive ? 'fixed inset-x-0 top-0 px-3 sm:px-4' : 'sticky top-0 border-b border-[#1c1c1f] bg-black'"
+    >
+      <div
+        class="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-6 px-4 sm:px-6"
+        :class="immersive ? 'rounded-b-2xl border border-t-0 border-white/15 bg-black/30 shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl' : ''"
+      >
         <RouterLink :to="homePath" class="flex min-w-0 items-center gap-2.5 text-[17px] font-bold text-[#f5f5f7]" :title="brandName">
           <img v-if="brandLogo" :src="brandLogo" :alt="brandName" class="h-7 max-w-[140px] object-contain" />
           <span v-else class="grid h-7 w-7 flex-none place-items-center rounded-lg bg-[color:var(--xh-accent)]">
@@ -25,12 +31,29 @@
           <span class="truncate">{{ brandName }}</span>
         </RouterLink>
 
+        <!-- 官网首页：首页 / AI 专区 / 二次元专区 + 文章搜索 -->
+        <nav v-if="immersive" class="ml-2 flex items-center gap-6 text-sm max-[900px]:hidden">
+          <RouterLink to="/" class="whitespace-nowrap text-white">{{ t('xinhuo.ethereal.navHome') }}</RouterLink>
+          <RouterLink :to="aiZonePath" class="whitespace-nowrap text-[#d2d2d7] transition-colors hover:text-white">{{ t('zone.ai.badge') }}</RouterLink>
+          <RouterLink :to="gameZonePath" class="whitespace-nowrap text-[#d2d2d7] transition-colors hover:text-white">{{ t('zone.game.badge') }}</RouterLink>
+        </nav>
+        <form v-if="immersive" class="relative ml-auto max-[900px]:hidden" role="search" @submit.prevent="submitSearch">
+          <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/60" aria-hidden="true" />
+          <input
+            id="eth-search"
+            v-model.trim="searchText"
+            type="search"
+            :placeholder="t('xinhuo.ethereal.search')"
+            class="h-9 w-56 rounded-full border border-white/15 bg-white/10 pl-9 pr-3 text-sm text-white outline-none placeholder:text-white/50 focus:border-white/40"
+          />
+        </form>
+
         <!-- 顶栏只保留「订单查询」；官网展示模式不能下单，不显示 -->
         <nav v-if="!showcase" class="ml-4 flex items-center gap-7 text-sm max-[900px]:hidden">
           <RouterLink :to="lookupTarget" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white" active-class="!text-white">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
         </nav>
 
-        <div class="ml-auto flex items-center gap-1 sm:gap-2">
+        <div class="flex items-center gap-1 sm:gap-2" :class="immersive ? 'max-[900px]:ml-auto' : 'ml-auto'">
           <!-- 主站展示模式不能下单，不显示购物车 -->
           <RouterLink v-if="!showcase" to="/cart" class="relative grid h-10 w-10 place-items-center rounded-full text-[#d2d2d7] transition-colors hover:bg-white/10 hover:text-white" :aria-label="t('navbar.cart')">
             <ShoppingBag class="h-[19px] w-[19px]" />
@@ -65,6 +88,12 @@
               <Menu v-else class="pointer-events-none h-[22px] w-[22px]" />
             </button>
             <div v-if="moreOpen" class="absolute right-0 top-[calc(100%+8px)] z-[60] flex w-[220px] flex-col gap-0.5 rounded-xl border border-[#2a2a2e] bg-[#161618] p-1.5 shadow-2xl">
+              <template v-if="immersive">
+                <RouterLink to="/" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('xinhuo.ethereal.navHome') }}</RouterLink>
+                <RouterLink :to="aiZonePath" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('zone.ai.badge') }}</RouterLink>
+                <RouterLink :to="gameZonePath" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('zone.game.badge') }}</RouterLink>
+                <div class="my-1 h-px bg-[#2a2a2e]"></div>
+              </template>
               <template v-if="!showcase">
                 <RouterLink :to="lookupTarget" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
                 <div class="my-1 h-px bg-[#2a2a2e]"></div>
@@ -125,7 +154,9 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { Check, Flame, Globe, LogOut, Menu, ShoppingBag, X } from 'lucide-vue-next'
+import { Check, Flame, Globe, LogOut, Menu, Search, ShoppingBag, X } from 'lucide-vue-next'
+import { useRoute, useRouter } from 'vue-router'
+import { businessZonePath } from '../../../utils/businessLines'
 import { useAppStore } from '../../../stores/app'
 import { useCartStore } from '../../../stores/cart'
 import { useUserAuthStore } from '../../../stores/userAuth'
@@ -161,6 +192,18 @@ const brandDescription = computed(() => {
 // 顶栏 logo：在专区里（或分站只代理一个专区）时回到专区，而不是总首页
 const { homePath } = useStorefrontLinks()
 const showcase = computed(() => isMainShowcase(appStore.config as any))
+
+// 官网首页使用 Ethereal 风格：毛玻璃顶栏浮在壁纸上，带专区入口和文章搜索
+const route = useRoute()
+const router = useRouter()
+const immersive = computed(() => showcase.value && route.name === 'home')
+const aiZonePath = businessZonePath('ai')
+const gameZonePath = businessZonePath('game')
+const searchText = ref(typeof route.query.q === 'string' ? route.query.q : '')
+const submitSearch = () => {
+  const q = searchText.value.trim()
+  void router.push({ path: '/', query: q ? { q } : {} })
+}
 
 // 订单查询是独立页面（游客凭邮箱 + 订单密码查询，登录用户可在个人中心查看）
 const lookupTarget = '/guest/orders'

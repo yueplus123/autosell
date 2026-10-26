@@ -123,7 +123,7 @@ func TestSeedDemoPostsIdempotentAndRemovable(t *testing.T) {
 	if err != nil {
 		t.Fatalf("open sqlite: %v", err)
 	}
-	if err := db.AutoMigrate(&contentdomain.Post{}); err != nil {
+	if err := db.AutoMigrate(&contentdomain.Post{}, &contentdomain.PostCategory{}); err != nil {
 		t.Fatalf("migrate: %v", err)
 	}
 	real := contentdomain.Post{Slug: "real-post", Type: "blog", TitleJSON: jsonmap.JSON{"zh-CN": "真实文章"}}
@@ -140,6 +140,12 @@ func TestSeedDemoPostsIdempotentAndRemovable(t *testing.T) {
 		t.Fatalf("second seed: created=%d skipped=%d err=%v", created, skipped, err)
 	}
 
+	var withCategory int64
+	db.Model(&contentdomain.Post{}).Where("slug LIKE ? AND category_id IS NOT NULL", "demo-%").Count(&withCategory)
+	if withCategory != int64(len(demoPosts)) {
+		t.Fatalf("every demo post should have a category, got %d", withCategory)
+	}
+
 	removed, err := removeDemoPosts(db)
 	if err != nil || removed != int64(len(demoPosts)) {
 		t.Fatalf("remove: removed=%d err=%v", removed, err)
@@ -148,5 +154,10 @@ func TestSeedDemoPostsIdempotentAndRemovable(t *testing.T) {
 	db.Model(&contentdomain.Post{}).Count(&left)
 	if left != 1 {
 		t.Fatalf("real post must survive, left=%d", left)
+	}
+	var cats int64
+	db.Model(&contentdomain.PostCategory{}).Count(&cats)
+	if cats != 0 {
+		t.Fatalf("demo categories should be removed, left=%d", cats)
 	}
 }

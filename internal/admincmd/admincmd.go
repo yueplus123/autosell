@@ -40,8 +40,8 @@ func Usage() {
                                                           不传 --password 时从 stdin 隐藏读入两次确认
   dujiao-api admin seed-categories                        一键创建「AI 服务」「二次元赞助」两大业务分类及常用子分类
                                                           可重复执行：已存在的分类不会被修改
-  dujiao-api admin seed-demo-posts                        写入 6 篇示例文章（预览官网首页文章样式用）
-  dujiao-api admin remove-demo-posts                      删除全部示例文章（只删 slug 以 demo- 开头的）`)
+  dujiao-api admin seed-demo-posts                        写入 6 篇示例文章和 3 个文章分类（预览官网首页样式用）
+  dujiao-api admin remove-demo-posts                      删除全部示例文章和示例分类（只删 slug 以 demo- 开头的）`)
 }
 
 // Run 分发 admin 子命令。args 是去掉 "admin" 之后的参数（os.Args[2:]）。

@@ -1955,6 +1955,29 @@
         "gmail": "Gmail",
         "gmailSub": "Email"
       }
+    },
+    "ethereal": {
+      "contact": "Contact us",
+      "toArticles": "Read articles",
+      "moments": "Updates",
+      "more": "More",
+      "all": "All articles",
+      "searchResult": "{n} articles found for \"{q}\"",
+      "clearSearch": "Clear search",
+      "words": "{n} chars",
+      "pager": "Article pages",
+      "prev": "Previous page",
+      "next": "Next page",
+      "noMatch": "No matching articles",
+      "notice": "Notice",
+      "about": "About us",
+      "stats": "Site stats",
+      "statPosts": "Articles",
+      "statCategories": "Categories",
+      "statWords": "Total chars",
+      "statUpdated": "Last updated",
+      "navHome": "Home",
+      "search": "Search articles"
     }
   },
   "zonePage": {
