@@ -24,9 +24,11 @@ test('main site without an active zone keeps normal home and shop paths', () => 
 test('after entering a zone, home and shop links point back into it', () => {
   store.clear()
   rememberActiveZone('game')
-  const config = { tenant: { mode: 'main' } }
+  const config = { tenant: { mode: 'main' }, showcase_mode: false }
   assert.equal(storefrontHomePath(config), '/zone/game')
   assert.equal(storefrontShopPath(config), '/zone/game')
+  // 官网展示模式：首页链接始终回到文章首页
+  assert.equal(storefrontHomePath({ tenant: { mode: 'main' } }), '/')
 })
 
 test('single-zone reseller is locked to its zone regardless of session', () => {

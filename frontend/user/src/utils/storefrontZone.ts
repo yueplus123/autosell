@@ -56,6 +56,8 @@ export const currentZone = (config: ConfigLike | null | undefined): BusinessLine
 
 /** 站内「首页 / 继续购物」应指向的地址 */
 export const storefrontHomePath = (config: ConfigLike | null | undefined): string => {
+  // 官网展示模式：首页是文章首页，导航栏可以在首页和两个专区之间切换
+  if (isMainShowcase(config)) return '/'
   const zone = currentZone(config)
   return zone ? businessZonePath(zone) : '/'
 }

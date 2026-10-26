@@ -1,7 +1,6 @@
 <template>
   <!-- 官网首页（参考 Ethereal 博客主题布局）：全屏壁纸首屏 + 动态条 + 三栏（品牌卡片 / 文章列表 / 公告与统计） -->
-  <div class="eth-page">
-    <EtherealSakura />
+  <div class="eth-page" :class="{ 'is-dark': ethDark }" :style="themeVars">
 
     <!-- ==================== 全屏壁纸首屏 ==================== -->
     <section class="eth-hero">
@@ -21,16 +20,9 @@
           <span>{{ typedSubtitle }}</span><span class="eth-caret" aria-hidden="true">|</span>
         </p>
         <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-          <RouterLink :to="aiZonePath" class="eth-hero-btn">
-            <Sparkles class="h-4 w-4" aria-hidden="true" />
-            {{ t('home.business.ai.cta') }}
-          </RouterLink>
-          <RouterLink :to="gameZonePath" class="eth-hero-btn">
-            <Gamepad2 class="h-4 w-4" aria-hidden="true" />
-            {{ t('home.business.game.cta') }}
-          </RouterLink>
-          <button type="button" class="eth-hero-icon" :aria-label="t('xinhuo.ethereal.contact')" @click="openContactModal()">
-            <MessageCircle class="h-[18px] w-[18px]" aria-hidden="true" />
+          <button type="button" class="eth-hero-btn" @click="openContactModal()">
+            <MessageCircle class="h-4 w-4" aria-hidden="true" />
+            {{ t('xinhuo.ethereal.contact') }}
           </button>
           <button type="button" class="eth-hero-icon" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
             <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
@@ -71,10 +63,6 @@
               <div class="text-lg font-bold">{{ brandName }}</div>
               <span class="eth-profile-bar" aria-hidden="true"></span>
               <p class="mt-2 text-[13px] leading-relaxed text-[color:var(--eth-muted)]">{{ brandDescription }}</p>
-              <div class="mt-4 grid grid-cols-2 gap-2">
-                <RouterLink :to="aiZonePath" class="eth-chip-btn">{{ t('zone.ai.badge') }}</RouterLink>
-                <RouterLink :to="gameZonePath" class="eth-chip-btn">{{ t('zone.game.badge') }}</RouterLink>
-              </div>
               <div v-if="contactChannels.length" class="mt-4 flex justify-center gap-2">
                 <button
                   v-for="ch in contactChannels"
@@ -93,7 +81,7 @@
         </aside>
 
         <!-- 中栏：分类 + 文章 -->
-        <main class="eth-main">
+        <main class="eth-main" :class="{ 'is-grid': ethLayout === 'grid' }">
           <div class="eth-card eth-cats">
             <button type="button" class="eth-cat eth-cat--home" :class="{ 'is-active': activeCategory === 0 }" :aria-label="t('xinhuo.ethereal.all')" @click="selectCategory(0)">
               <Home class="h-4 w-4" aria-hidden="true" />
@@ -116,6 +104,7 @@
           </p>
 
           <template v-if="pagedPosts.length">
+            <div class="eth-list">
             <RouterLink
               v-for="(post, i) in pagedPosts"
               :key="post.id"
@@ -136,6 +125,7 @@
                 <img :src="getImageUrl(post.thumbnail)" :alt="getLocalizedText(post.title)" loading="lazy" />
               </div>
             </RouterLink>
+            </div>
 
             <nav v-if="totalPages > 1" class="eth-pager" :aria-label="t('xinhuo.ethereal.pager')">
               <button type="button" class="eth-page-btn" :disabled="page <= 1" :aria-label="t('xinhuo.ethereal.prev')" @click="goPage(page - 1)"><ChevronLeft class="h-4 w-4" /></button>
@@ -180,17 +170,16 @@ import { computed, onMounted, onUnmounted, ref, watch, type Component } from 'vu
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
-  BookOpen, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, FileText, Flame, Gamepad2, Home,
-  MessageCircle, PenLine, Send, Smartphone, Sparkles, Tags, Zap,
+  BookOpen, CalendarDays, ChevronDown, ChevronLeft, ChevronRight, FileText, Flame, Home,
+  MessageCircle, PenLine, Send, Smartphone, Tags, Zap,
 } from 'lucide-vue-next'
 import { bannerAPI, postAPI, postCategoryAPI } from '../../../api'
 import { getImageUrl } from '../../../utils/image'
-import { businessZonePath } from '../../../utils/businessLines'
 import { useLocalized } from '../../../composables/useProduct'
 import { useNavConfig } from '../../../composables/useNavConfig'
 import { useAppStore } from '../../../stores/app'
 import { openContactModal } from '../contactModal'
-import EtherealSakura from './EtherealSakura.vue'
+import { ethDark, ethHue, ethLayout, etherealVars } from '../etherealTheme'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -199,8 +188,8 @@ const appStore = useAppStore()
 const { getLocalizedText } = useLocalized()
 const { aboutEnabled } = useNavConfig()
 
-const aiZonePath = businessZonePath('ai')
-const gameZonePath = businessZonePath('game')
+// 访客显示设置（顶栏的调色板 / 深浅色按钮）
+const themeVars = computed(() => etherealVars(ethHue.value, ethDark.value))
 
 // ==================== 品牌 ====================
 const brandName = computed(() => String(appStore.config?.brand?.site_name || '').trim() || '薪火数卡')
@@ -372,14 +361,8 @@ onUnmounted(() => {
 
 <style scoped>
 .eth-page {
-  --eth-bg: #eef1f8;
-  --eth-card: #ffffff;
-  --eth-ink: #1f2433;
-  --eth-muted: #6b7288;
-  --eth-line: #e4e8f2;
-  --eth-accent: #4f7cf0;
-  --eth-accent-soft: #e8efff;
   background: var(--eth-bg);
+  transition: background 0.3s ease, color 0.3s ease;
   color: var(--eth-ink);
   padding-bottom: 56px;
 }
@@ -483,7 +466,8 @@ onUnmounted(() => {
   background: var(--eth-card);
   border: 1px solid var(--eth-line);
   border-radius: 16px;
-  box-shadow: 0 6px 24px rgba(31, 36, 51, 0.05);
+  box-shadow: 0 6px 24px var(--eth-shadow);
+  transition: background 0.3s ease, border-color 0.3s ease;
 }
 .eth-grid {
   display: grid;
@@ -661,8 +645,8 @@ onUnmounted(() => {
 }
 .eth-post:hover {
   transform: translateY(-3px);
-  border-color: #cdd8f6;
-  box-shadow: 0 14px 34px rgba(79, 124, 240, 0.14);
+  border-color: var(--eth-hover-line);
+  box-shadow: 0 14px 34px var(--eth-shadow);
 }
 @keyframes eth-rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .eth-post-body {
@@ -751,6 +735,33 @@ onUnmounted(() => {
   .eth-post-body { padding: 8px 4px; }
 }
 
+/* ---------- 列表 / 网格 ---------- */
+.eth-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.eth-main.is-grid .eth-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.eth-main.is-grid .eth-post {
+  flex-direction: column-reverse;
+  gap: 4px;
+  padding: 10px;
+}
+.eth-main.is-grid .eth-post-cover {
+  width: 100%;
+  max-width: none;
+}
+.eth-main.is-grid .eth-post-title { font-size: 18px; }
+@media (max-width: 640px) {
+  .eth-main.is-grid .eth-list { grid-template-columns: minmax(0, 1fr); }
+}
+.eth-page.is-dark .eth-hero-shade {
+  background: linear-gradient(180deg, rgba(5, 6, 14, 0.45) 0%, rgba(5, 6, 14, 0.35) 45%, rgba(5, 6, 14, 0.55) 100%);
+}
+
 /* ---------- 分页 ---------- */
 .eth-pager {
   display: flex;
@@ -812,6 +823,7 @@ onUnmounted(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .eth-post, .eth-marquee-track, .eth-caret { animation: none; }
+  .eth-page, .eth-card { transition: none; }
   .eth-hero-bg { transition: none; }
 }
 </style>

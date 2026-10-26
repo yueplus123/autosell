@@ -1977,7 +1977,15 @@
       "statWords": "Total chars",
       "statUpdated": "Last updated",
       "navHome": "Home",
-      "search": "Search articles"
+      "search": "Search articles",
+      "display": "Display settings",
+      "hue": "Theme hue",
+      "reset": "Reset",
+      "layout": "Article layout",
+      "layoutList": "List",
+      "layoutGrid": "Grid",
+      "dark": "Switch to dark",
+      "light": "Switch to light"
     }
   },
   "zonePage": {

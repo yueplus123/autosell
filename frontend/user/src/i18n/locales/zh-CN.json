@@ -1977,7 +1977,15 @@
       "statWords": "总字数",
       "statUpdated": "最近更新",
       "navHome": "首页",
-      "search": "搜索文章"
+      "search": "搜索文章",
+      "display": "显示设置",
+      "hue": "主题色相",
+      "reset": "恢复默认",
+      "layout": "文章布局",
+      "layoutList": "列表",
+      "layoutGrid": "网格",
+      "dark": "切换到深色",
+      "light": "切换到浅色"
     }
   },
   "zonePage": {

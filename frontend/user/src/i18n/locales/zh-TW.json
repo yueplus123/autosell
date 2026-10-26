@@ -1977,7 +1977,15 @@
       "statWords": "總字數",
       "statUpdated": "最近更新",
       "navHome": "首頁",
-      "search": "搜尋文章"
+      "search": "搜尋文章",
+      "display": "顯示設定",
+      "hue": "主題色相",
+      "reset": "恢復預設",
+      "layout": "文章版面",
+      "layoutList": "列表",
+      "layoutGrid": "網格",
+      "dark": "切換到深色",
+      "light": "切換到淺色"
     }
   },
   "zonePage": {
