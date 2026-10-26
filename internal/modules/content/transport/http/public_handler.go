@@ -37,6 +37,15 @@ type PublicHandler struct {
 	posts      PublicPostQueries
 	categories PublicPostCategoryQueries
 	banners    PublicBannerQueries
+	// hideRelatedProducts 返回 true 时文章详情不附带关联商品（官网展示模式下避免露出价格）
+	hideRelatedProducts func() bool
+}
+
+// SetHideRelatedProducts 注入「是否隐藏文章关联商品」的判断。
+func (h *PublicHandler) SetHideRelatedProducts(fn func() bool) {
+	if h != nil {
+		h.hideRelatedProducts = fn
+	}
 }
 
 // NewPublicHandler 创建公开 Content Handler。
@@ -76,7 +85,7 @@ func (h *PublicHandler) GetPostBySlug(c *gin.Context) {
 	}
 
 	result := contentpresenter.NewPostResp(post)
-	if post.Type == constants.PostTypeBlog {
+	if post.Type == constants.PostTypeBlog && (h.hideRelatedProducts == nil || !h.hideRelatedProducts()) {
 		products, relatedErr := h.posts.ListRelatedProducts(requestContext, post.ID)
 		if relatedErr == nil {
 			result.RelatedProducts = contentpresenter.NewRelatedProductCardList(products)

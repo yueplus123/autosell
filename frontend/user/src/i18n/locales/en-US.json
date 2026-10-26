@@ -1859,7 +1859,10 @@
     },
     "posts": {
       "title": "Latest articles.",
-      "all": "All articles"
+      "all": "All articles",
+      "empty": "No articles yet",
+      "more": "Load more",
+      "loading": "Loading…"
     },
     "faq": {
       "title": "Questions.",

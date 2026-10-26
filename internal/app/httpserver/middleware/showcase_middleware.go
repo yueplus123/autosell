@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/dujiao-next/internal/i18n"
@@ -54,6 +55,37 @@ func ShowcaseModeOrderGuard(reader ShowcaseModeReader) gin.HandlerFunc {
 			return
 		}
 		response.Forbidden(c, i18n.T(i18n.ResolveLocale(c), "error.showcase_mode"))
+		c.Abort()
+	}
+}
+
+// ResellerContentIsolation 让分销站与官网的文章、公告隔离：
+// 分销站上文章/公告列表返回空，详情返回「文章不存在」。官网（主站）不受影响。
+func ResellerContentIsolation() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if c.Request.Method != http.MethodGet {
+			c.Next()
+			return
+		}
+		fullPath := c.FullPath()
+		isList := strings.HasSuffix(fullPath, "/public/posts")
+		isDetail := strings.HasSuffix(fullPath, "/public/posts/:slug")
+		if !isList && !isDetail {
+			c.Next()
+			return
+		}
+		tenant, ok := resellercontract.TenantFromContext(c.Request.Context())
+		if !ok || !tenant.IsReseller() {
+			c.Next()
+			return
+		}
+		if isList {
+			page, _ := strconv.Atoi(c.Query("page"))
+			pageSize, _ := strconv.Atoi(c.Query("page_size"))
+			response.SuccessWithPage(c, []interface{}{}, response.BuildPagination(page, pageSize, 0))
+		} else {
+			response.Error(c, response.CodeNotFound, i18n.T(i18n.ResolveLocale(c), "error.post_not_found"))
+		}
 		c.Abort()
 	}
 }

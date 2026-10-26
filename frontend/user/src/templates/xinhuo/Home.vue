@@ -25,22 +25,59 @@
           </div>
         </div>
 
-        <a href="#zones" class="mt-2 inline-flex flex-col items-center gap-1.5 pb-6 pt-1 text-[13px] text-[#a1a1a6] transition-colors hover:text-white sm:pb-7" @click.prevent="scrollToId('zones')">
+        <!-- 官网展示模式：首屏直接给两个专区入口 -->
+        <div v-if="showcase" class="flex flex-wrap justify-center gap-3 pb-8 pt-2 sm:pb-10">
+          <RouterLink :to="aiZonePath" class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[15px] font-semibold text-black shadow-[0_0_36px_rgba(34,211,238,0.35)] transition hover:scale-105">
+            {{ t('home.business.ai.cta') }}
+            <ArrowRight class="h-4 w-4" aria-hidden="true" />
+          </RouterLink>
+          <RouterLink :to="gameZonePath" class="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-violet-600 via-fuchsia-500 to-orange-400 px-6 py-3 text-[15px] font-semibold text-white shadow-[0_0_36px_rgba(217,70,239,0.35)] transition hover:scale-105">
+            {{ t('home.business.game.cta') }}
+            <ArrowRight class="h-4 w-4" aria-hidden="true" />
+          </RouterLink>
+        </div>
+        <a v-else href="#zones" class="mt-2 inline-flex flex-col items-center gap-1.5 pb-6 pt-1 text-[13px] text-[#a1a1a6] transition-colors hover:text-white sm:pb-7" @click.prevent="scrollToId('zones')">
           <span>{{ t('xinhuo.hero.scroll') }}</span>
           <ChevronDown class="h-5 w-5" />
         </a>
       </div>
     </section>
 
+    <!-- ==================== 官网展示模式：文章列表（首页即博客） ==================== -->
+    <section v-if="showcase" id="articles" class="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-16">
+      <h2 class="mb-4 text-2xl font-black sm:mb-6 sm:text-[32px]">{{ t('xinhuo.posts.title') }}</h2>
+      <div v-if="articles.length" class="grid grid-cols-1 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(300px,1fr))] sm:gap-5">
+        <RouterLink v-for="post in articles" :key="post.id" :to="`/blog/${post.slug}`" class="flex min-w-0 gap-3 overflow-hidden rounded-2xl bg-white p-3 text-[color:var(--xh-ink)] transition-shadow hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)] sm:flex-col sm:gap-0 sm:rounded-[20px] sm:p-0">
+          <div class="h-[68px] w-[88px] flex-none overflow-hidden rounded-[10px] bg-[#e8e8ed] sm:h-[180px] sm:w-full sm:rounded-none">
+            <img v-if="post.thumbnail" :src="getImageUrl(post.thumbnail)" :alt="getLocalizedText(post.title)" class="h-full w-full object-cover" loading="lazy" />
+          </div>
+          <div class="min-w-0 sm:px-[22px] sm:pb-6 sm:pt-5">
+            <span class="text-[11px] text-[color:var(--xh-muted)] sm:text-[13px]">{{ formatDate(post.published_at) }}</span>
+            <h3 class="mt-0.5 line-clamp-2 text-sm font-bold leading-snug sm:mt-2 sm:text-lg">{{ getLocalizedText(post.title) }}</h3>
+            <p v-if="getLocalizedText(post.summary)" class="mt-2 line-clamp-2 text-sm text-[color:var(--xh-muted)] max-sm:hidden">{{ getLocalizedText(post.summary) }}</p>
+          </div>
+        </RouterLink>
+      </div>
+      <p v-else-if="!articlesLoading" class="rounded-[20px] bg-white px-6 py-14 text-center text-sm text-[color:var(--xh-muted)]">{{ t('xinhuo.posts.empty') }}</p>
+      <div v-if="articlesHasMore" class="mt-6 flex justify-center">
+        <button type="button" class="rounded-full border border-[color:var(--xh-line)] bg-white px-6 py-2.5 text-sm font-medium transition hover:border-[color:var(--xh-accent)] hover:text-[color:var(--xh-accent)] disabled:opacity-50" :disabled="articlesLoading" @click="loadArticles(articlesPage + 1)">
+          {{ articlesLoading ? t('xinhuo.posts.loading') : t('xinhuo.posts.more') }}
+        </button>
+      </div>
+    </section>
+
+    <template v-if="!showcase">
     <!-- ==================== 第二屏：左 AI 专区 / 右二次元赞助专区 ==================== -->
     <XinhuoZoneSplit />
 
     <!-- ==================== 商品展示模块（ChatGPT / 海外账号与礼品卡 / 更多会员） ==================== -->
     <XinhuoModules />
+    </template>
 
     <!-- ==================== 为什么在薪火数卡购买 ==================== -->
     <XinhuoWhy />
 
+    <template v-if="!showcase">
     <!-- ==================== 三步购买 ==================== -->
     <section class="bg-white">
       <div class="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-16">
@@ -75,8 +112,8 @@
       </div>
     </section>
 
-    <!-- ==================== 最新文章 ==================== -->
-    <section v-if="blogEnabled && posts.length" class="mx-auto max-w-[1200px] px-4 pb-10 sm:px-6 sm:pb-16">
+    <!-- ==================== 最新文章（分站不显示官网文章） ==================== -->
+    <section v-if="!isReseller && blogEnabled && posts.length" class="mx-auto max-w-[1200px] px-4 pb-10 sm:px-6 sm:pb-16">
       <div class="mb-3.5 flex items-baseline justify-between gap-4 sm:mb-6">
         <h2 class="text-2xl font-black sm:text-[32px]">{{ t('xinhuo.posts.title') }}</h2>
         <RouterLink to="/blog" class="text-sm font-medium text-[color:var(--xh-accent)] hover:text-[color:var(--xh-accent-hover)] sm:text-[15px]">{{ t('xinhuo.posts.all') }} ›</RouterLink>
@@ -122,6 +159,7 @@
         <RouterLink to="/privacy" class="text-[color:var(--xh-accent)] hover:underline">{{ t('xinhuo.notice.privacy') }}</RouterLink>
       </p>
     </section>
+    </template>
   </div>
 </template>
 
@@ -129,13 +167,15 @@
 import { computed, nextTick, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { Check, ChevronDown, Plus } from 'lucide-vue-next'
+import { ArrowRight, Check, ChevronDown, Plus } from 'lucide-vue-next'
 import { postAPI } from '../../api'
 import { getImageUrl } from '../../utils/image'
 import { useLocalized } from '../../composables/useProduct'
 import { useNavConfig } from '../../composables/useNavConfig'
 import { usePageSeo } from '../../composables/usePageSeo'
 import { useAppStore } from '../../stores/app'
+import { isMainShowcase } from '../../utils/storefrontZone'
+import { businessZonePath } from '../../utils/businessLines'
 import XinhuoZoneSplit from './components/XinhuoZoneSplit.vue'
 import XinhuoModules from './components/XinhuoModules.vue'
 import XinhuoWhy from './components/XinhuoWhy.vue'
@@ -148,6 +188,12 @@ const appStore = useAppStore()
 const { blogEnabled, aboutEnabled } = useNavConfig()
 
 usePageSeo({ canonicalPath: () => route.path })
+
+// 官网展示模式：首页 = 首屏（两个专区入口）+ 文章列表 + 为什么选择薪火；分站保持商城首页
+const showcase = computed(() => isMainShowcase(appStore.config as any))
+const isReseller = computed(() => String((appStore.config as any)?.tenant?.mode || '') === 'reseller')
+const aiZonePath = businessZonePath('ai')
+const gameZonePath = businessZonePath('game')
 
 // ==================== 首屏 ====================
 const heroTitle = computed(() => t('xinhuo.hero.title'))
@@ -215,11 +261,38 @@ const loadPosts = async () => {
     console.error('Failed to load posts:', err)
   }
 }
+
+// 官网文章列表（分页加载）
+const ARTICLE_PAGE_SIZE = 9
+const articles = ref<any[]>([])
+const articlesPage = ref(0)
+const articlesTotal = ref(0)
+const articlesLoading = ref(false)
+const articlesHasMore = computed(() => articles.value.length < articlesTotal.value)
+const loadArticles = async (page: number) => {
+  if (articlesLoading.value) return
+  articlesLoading.value = true
+  try {
+    const res = await postAPI.list({ page, page_size: ARTICLE_PAGE_SIZE, type: 'blog' })
+    const list = res.data.data || []
+    articles.value = page === 1 ? list : [...articles.value, ...list]
+    articlesTotal.value = Number(res.data.pagination?.total ?? articles.value.length)
+    articlesPage.value = page
+  } catch (err) {
+    console.error('Failed to load articles:', err)
+  } finally {
+    articlesLoading.value = false
+  }
+}
 const formatDate = (value: string) => (value ? new Date(value).toLocaleDateString() : '')
 
 onMounted(async () => {
   await appStore.loadConfig()
-  await loadPosts()
+  if (showcase.value) {
+    await loadArticles(1)
+  } else if (!isReseller.value) {
+    await loadPosts()
+  }
   // 带锚点进入首页时（如 /#zones），数据加载完再定位
   if (route.hash) {
     await nextTick()

@@ -98,6 +98,8 @@ func SetupRouter(cfg *config.Config, c *container.Container) *gin.Engine {
 		c.ContentPostCategoryService,
 		c.ContentBannerService,
 	)
+	// 官网展示模式下文章详情不带关联商品（关联商品卡片里有价格）
+	publicContentHandler.SetHideRelatedProducts(c.SettingService.IsShowcaseMode)
 	publicCatalogHandler := catalogproductbootstrap.NewPublicHTTP(catalogproductbootstrap.PublicHTTPDependencies{
 		Products:     c.ProductReadService,
 		Hidden:       c.ResellerStore,

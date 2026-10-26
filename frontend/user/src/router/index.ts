@@ -374,6 +374,15 @@ router.beforeEach(async (to, _from, next) => {
         }
     }
 
+    // ===== 分站与官网隔离 =====
+    // 分站看不到官网的文章和公告（后端也会返回空），这些页面直接回到分站首页
+    if (String((appStore.config as any)?.tenant?.mode || '') === 'reseller') {
+        if (['blog', 'blog-detail', 'notice'].includes(String(to.name || ''))) {
+            next(lockedZone ? businessZonePath(lockedZone) : '/')
+            return
+        }
+    }
+
     // 进入专区后记住它，站内「返回首页 / 继续购物」都回到这个专区
     if (to.name === 'business-zone' && isBusinessLineKey(String(to.params.key || ''))) {
         rememberActiveZone(String(to.params.key) as 'ai' | 'game')
