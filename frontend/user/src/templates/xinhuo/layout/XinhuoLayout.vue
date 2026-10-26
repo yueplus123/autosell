@@ -25,8 +25,8 @@
           <span class="truncate">{{ brandName }}</span>
         </RouterLink>
 
-        <!-- 顶栏只保留「订单查询」 -->
-        <nav class="ml-4 flex items-center gap-7 text-sm max-[900px]:hidden">
+        <!-- 顶栏只保留「订单查询」；官网展示模式不能下单，不显示 -->
+        <nav v-if="!showcase" class="ml-4 flex items-center gap-7 text-sm max-[900px]:hidden">
           <RouterLink :to="lookupTarget" class="whitespace-nowrap text-[#b8b8be] transition-colors hover:text-white" active-class="!text-white">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
         </nav>
 
@@ -65,8 +65,10 @@
               <Menu v-else class="pointer-events-none h-[22px] w-[22px]" />
             </button>
             <div v-if="moreOpen" class="absolute right-0 top-[calc(100%+8px)] z-[60] flex w-[220px] flex-col gap-0.5 rounded-xl border border-[#2a2a2e] bg-[#161618] p-1.5 shadow-2xl">
-              <RouterLink :to="lookupTarget" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
-              <div class="my-1 h-px bg-[#2a2a2e]"></div>
+              <template v-if="!showcase">
+                <RouterLink :to="lookupTarget" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('xinhuo.nav.orderLookup') }}</RouterLink>
+                <div class="my-1 h-px bg-[#2a2a2e]"></div>
+              </template>
               <RouterLink v-if="userAuthStore.isAuthenticated" to="/me" class="rounded-lg px-3 py-2.5 text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="moreOpen = false">{{ t('navbar.personalCenter') }}</RouterLink>
               <button v-if="userAuthStore.isAuthenticated" type="button" class="rounded-lg px-3 py-2.5 text-left text-sm text-[#d2d2d7] hover:bg-white/10 hover:text-white" @click="userAuthStore.logout(); moreOpen = false">{{ t('navbar.logout') }}</button>
               <template v-else>
@@ -98,7 +100,7 @@
         </div>
         <div class="flex flex-col gap-2.5">
           <div class="font-medium text-[#f5f5f7]">{{ t('xinhuo.footer.service') }}</div>
-          <RouterLink :to="lookupTarget" class="hover:text-white">{{ t('xinhuo.footer.orderLookup') }}</RouterLink>
+          <RouterLink v-if="!showcase" :to="lookupTarget" class="hover:text-white">{{ t('xinhuo.footer.orderLookup') }}</RouterLink>
           <span v-if="contact?.wechat">{{ t('xinhuo.contact.wechat') }}：{{ contact.wechat }}</span>
           <span v-if="contact?.qq">QQ：{{ contact.qq }}</span>
           <a v-if="contact?.telegram" :href="telegramHref" target="_blank" rel="noopener noreferrer" class="hover:text-white">Telegram</a>

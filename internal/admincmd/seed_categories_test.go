@@ -6,6 +6,7 @@ import (
 	"time"
 
 	categorydomain "github.com/dujiao-next/internal/modules/catalog/category/domain"
+	contentdomain "github.com/dujiao-next/internal/modules/content/domain"
 	"github.com/dujiao-next/internal/shared/jsonmap"
 
 	"github.com/glebarez/sqlite"
@@ -113,5 +114,39 @@ func TestSeedBusinessCategoriesWarnsWhenRootIsNested(t *testing.T) {
 	}
 	if len(result.Warnings) == 0 {
 		t.Fatalf("expected a warning for nested root")
+	}
+}
+
+func TestSeedDemoPostsIdempotentAndRemovable(t *testing.T) {
+	dsn := fmt.Sprintf("file:seed_posts_%d?mode=memory&cache=shared", time.Now().UnixNano())
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	if err != nil {
+		t.Fatalf("open sqlite: %v", err)
+	}
+	if err := db.AutoMigrate(&contentdomain.Post{}); err != nil {
+		t.Fatalf("migrate: %v", err)
+	}
+	real := contentdomain.Post{Slug: "real-post", Type: "blog", TitleJSON: jsonmap.JSON{"zh-CN": "真实文章"}}
+	if err := db.Create(&real).Error; err != nil {
+		t.Fatalf("create real post: %v", err)
+	}
+
+	created, skipped, err := seedDemoPosts(db, demoPosts, time.Now())
+	if err != nil || created != len(demoPosts) || skipped != 0 {
+		t.Fatalf("first seed: created=%d skipped=%d err=%v", created, skipped, err)
+	}
+	created, skipped, err = seedDemoPosts(db, demoPosts, time.Now())
+	if err != nil || created != 0 || skipped != len(demoPosts) {
+		t.Fatalf("second seed: created=%d skipped=%d err=%v", created, skipped, err)
+	}
+
+	removed, err := removeDemoPosts(db)
+	if err != nil || removed != int64(len(demoPosts)) {
+		t.Fatalf("remove: removed=%d err=%v", removed, err)
+	}
+	var left int64
+	db.Model(&contentdomain.Post{}).Count(&left)
+	if left != 1 {
+		t.Fatalf("real post must survive, left=%d", left)
 	}
 }
