@@ -151,7 +151,8 @@
           <div class="text-base font-bold text-[#f5f5f7]">{{ brandName }}</div>
           <p class="mt-3 max-w-[36ch] leading-relaxed">{{ brandDescription || t('xinhuo.footer.tagline') }}</p>
         </div>
-        <div class="flex flex-col gap-2.5">
+        <!-- 官网不显示联系方式 -->
+        <div v-if="!showcase" class="flex flex-col gap-2.5">
           <div class="font-medium text-[#f5f5f7]">{{ t('xinhuo.footer.service') }}</div>
           <RouterLink v-if="!showcase" :to="lookupTarget" class="hover:text-white">{{ t('xinhuo.footer.orderLookup') }}</RouterLink>
           <span v-if="contact?.wechat">{{ t('xinhuo.contact.wechat') }}：{{ contact.wechat }}</span>

@@ -2,32 +2,44 @@
   <!-- 官网首页（参考 Ethereal 博客主题布局）：全屏壁纸首屏 + 动态条 + 三栏（品牌卡片 / 文章列表 / 公告与统计） -->
   <div class="eth-page" :class="{ 'is-dark': ethDark }" :style="themeVars">
 
-    <!-- ==================== 全屏壁纸首屏 ==================== -->
-    <section class="eth-hero">
-      <div
-        v-for="(bg, i) in heroBackgrounds"
-        :key="bg.key"
-        class="eth-hero-bg"
-        :class="{ 'is-active': i === activeBg }"
-        :style="{ '--bg': `url(${bg.image})`, '--bg-mobile': `url(${bg.mobile || bg.image})` }"
-        aria-hidden="true"
-      ></div>
-      <div class="eth-hero-shade" aria-hidden="true"></div>
+    <!-- ==================== 首屏：默认是科技风图标墙（AI / Visa / 二次元 图标）；后台上传了轮播图时改用图片壁纸 ==================== -->
+    <section class="eth-hero" :class="hasWallpaper ? '' : 'xh-hero eth-hero--tech'">
+      <template v-if="hasWallpaper">
+        <div
+          v-for="(bg, i) in heroBackgrounds"
+          :key="bg.key"
+          class="eth-hero-bg"
+          :class="{ 'is-active': i === activeBg }"
+          :style="{ '--bg': `url(${bg.image})`, '--bg-mobile': `url(${bg.mobile || bg.image})` }"
+          aria-hidden="true"
+        ></div>
+        <div class="eth-hero-shade" aria-hidden="true"></div>
+      </template>
+      <div v-else class="xh-scan" aria-hidden="true"></div>
 
-      <div class="relative z-[1] mx-auto flex h-full max-w-[1200px] flex-col items-center justify-center px-4 text-center text-white">
-        <h1 class="eth-hero-title">{{ heroTitle }}</h1>
+      <div class="eth-hero-inner" :class="{ 'is-tech': !hasWallpaper }">
+        <h1 class="eth-hero-title" :class="{ 'xh-hero-title': !hasWallpaper }">{{ heroTitle }}</h1>
         <p class="eth-hero-sub">
           <span>{{ typedSubtitle }}</span><span class="eth-caret" aria-hidden="true">|</span>
         </p>
-        <div class="mt-7 flex flex-wrap items-center justify-center gap-3">
-          <button type="button" class="eth-hero-btn" @click="openContactModal()">
-            <MessageCircle class="h-4 w-4" aria-hidden="true" />
-            {{ t('xinhuo.ethereal.contact') }}
-          </button>
-          <button type="button" class="eth-hero-icon" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
-            <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
-          </button>
+
+        <div v-if="!hasWallpaper" class="xh-wall mt-5 w-full max-w-[1240px] sm:mt-6">
+          <div
+            v-for="tile in wallTiles"
+            :key="tile.icon"
+            role="img"
+            :aria-label="tile.label"
+            class="xh-tile"
+            :class="[`xh-tile--${tile.tone}`, `xh-tile--${tile.row}`, { 'xh-tile--wide': tile.wide }]"
+            :style="tile.style"
+          >
+            <img :src="tile.src" alt="" />
+          </div>
         </div>
+
+        <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-2'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
+          <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
+        </button>
       </div>
 
       <!-- 底部波浪 -->
@@ -179,6 +191,7 @@ import { useLocalized } from '../../../composables/useProduct'
 import { useNavConfig } from '../../../composables/useNavConfig'
 import { useAppStore } from '../../../stores/app'
 import { openContactModal } from '../contactModal'
+import { HERO_ICON_BASE, heroTiles } from '../heroTiles'
 import { ethDark, ethHue, ethLayout, etherealVars } from '../etherealTheme'
 
 const { t } = useI18n()
@@ -213,15 +226,31 @@ const contactChannels = computed(() => {
 })
 
 // ==================== 首屏：壁纸读取后台「轮播图」，没有时用默认壁纸 ====================
-const DEFAULT_WALLPAPER = '/xinhuo/ethereal/sky.svg'
 const banners = ref<any[]>([])
 const heroBackgrounds = computed(() => {
   const list = banners.value
     .filter((b) => String(b?.image || '').trim())
     .map((b) => ({ key: `b-${b.id}`, image: getImageUrl(b.image), mobile: b.mobile_image ? getImageUrl(b.mobile_image) : '' }))
-  return list.length ? list : [{ key: 'default', image: DEFAULT_WALLPAPER, mobile: '' }]
+  return list
 })
+const hasWallpaper = computed(() => banners.value.some((b) => String(b?.image || '').trim()))
 const firstBanner = computed(() => banners.value[0])
+
+// 默认首屏：沿用之前的 AI / Visa / 二次元 图标墙
+const wallTiles = heroTiles.map((tile) => ({
+  ...tile,
+  src: HERO_ICON_BASE + tile.icon,
+  style: {
+    '--x': `${tile.x}%`,
+    '--y': `${tile.y}%`,
+    '--s': `${tile.s}%`,
+    '--mx': `${tile.mx}%`,
+    '--my': `${tile.my}%`,
+    '--ms': `${tile.ms}%`,
+    ...(tile.glow ? { '--glow': tile.glow } : {}),
+    zIndex: tile.z ?? 1,
+  } as Record<string, string | number>,
+}))
 const heroTitle = computed(() => getLocalizedText(firstBanner.value?.title).trim() || t('xinhuo.hero.title'))
 const heroSubtitleFull = computed(() => getLocalizedText(firstBanner.value?.subtitle).trim() || t('xinhuo.hero.subtitle'))
 
@@ -374,6 +403,43 @@ onUnmounted(() => {
   min-height: 560px;
   overflow: hidden;
   background: #2e2753;
+}
+.eth-hero-inner {
+  position: relative;
+  z-index: 1;
+  margin: 0 auto;
+  display: flex;
+  height: 100%;
+  max-width: 1200px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  text-align: center;
+  color: #fff;
+}
+.eth-hero-inner.is-tech {
+  max-width: 1240px;
+  height: auto;
+  justify-content: flex-start;
+}
+/* 科技风首屏：高度跟随内容，顶部给毛玻璃顶栏留位置，底部给波浪留位置 */
+.eth-hero--tech {
+  height: auto;
+  min-height: 0;
+  padding: 96px 0 84px;
+  background:
+    radial-gradient(ellipse at 18% 88%, rgba(37, 99, 235, 0.32), transparent 42%),
+    radial-gradient(ellipse at 50% 100%, rgba(34, 211, 238, 0.16), transparent 40%),
+    radial-gradient(ellipse at 82% 86%, rgba(217, 70, 239, 0.26), transparent 38%),
+    #000;
+}
+.eth-hero-title.xh-hero-title {
+  text-shadow: none;
+}
+.eth-hero--tech .eth-hero-sub {
+  color: #a1a1a6;
+  text-shadow: none;
 }
 .eth-hero-bg {
   position: absolute;
