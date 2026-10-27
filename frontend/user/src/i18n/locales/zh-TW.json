@@ -271,7 +271,8 @@
   "blogDetail": {
     "backToBlog": "返回部落格列表",
     "backToNotice": "返回公告列表",
-    "notFound": "文章不存在"
+    "notFound": "文章不存在",
+    "backToHome": "返回首頁"
   },
   "notice": {
     "subtitle": "重要公告和通知",
@@ -2001,6 +2002,20 @@
     "game": {
       "search": "搜尋遊戲或商品…",
       "listTitle": "全部二次元商品"
+    },
+    "showcase": {
+      "ai": {
+        "description": "ChatGPT、Claude、Midjourney 等熱門 AI 帳號與額度，官方渠道，品質有保障。",
+        "highlight1": "官方渠道",
+        "highlight2": "品類齊全",
+        "highlight3": "售後質保"
+      },
+      "game": {
+        "description": "原神、崩壞：星穹鐵道、絕區零等熱門遊戲，官方渠道，省心放心。",
+        "highlight1": "官方渠道",
+        "highlight2": "省心放心",
+        "highlight3": "熱門遊戲全覆蓋"
+      }
     }
   }
 }

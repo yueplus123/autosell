@@ -271,7 +271,8 @@
   "blogDetail": {
     "backToBlog": "Back to Blog",
     "backToNotice": "Back to Notice",
-    "notFound": "Article not found"
+    "notFound": "Article not found",
+    "backToHome": "Back to home"
   },
   "notice": {
     "subtitle": "Important notices and announcements",
@@ -2001,6 +2002,20 @@
     "game": {
       "search": "Search games or products…",
       "listTitle": "All anime products"
+    },
+    "showcase": {
+      "ai": {
+        "description": "Popular AI accounts and credits for ChatGPT, Claude, Midjourney and more, through official channels with quality you can trust.",
+        "highlight1": "Official channels",
+        "highlight2": "Wide selection",
+        "highlight3": "After-sales support"
+      },
+      "game": {
+        "description": "Genshin Impact, Honkai: Star Rail, Zenless Zone Zero and more, through official channels.",
+        "highlight1": "Official channels",
+        "highlight2": "Worry-free",
+        "highlight3": "All popular games"
+      }
     }
   }
 }

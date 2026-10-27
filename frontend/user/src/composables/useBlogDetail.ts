@@ -6,6 +6,7 @@ import { postAPI } from '../api'
 import { debounceAsync } from '../utils/debounce'
 import { useLocalized } from './useProduct'
 import { usePageSeo } from './usePageSeo'
+import { isMainShowcase } from '../utils/storefrontZone'
 
 /**
  * 文章/公告详情共享逻辑（classic + vault 双模板共用）。
@@ -45,12 +46,17 @@ export function useBlogDetail() {
     type: () => 'article',
   })
 
+  // 官网（展示模式）的首页就是文章列表，文章详情直接返回首页
+  const showcase = computed(() => isMainShowcase(appStore.config as any))
+
   const backLink = computed(() => {
+    if (showcase.value && post.value?.type !== 'notice') return '/'
     if (!post.value) return '/blog'
     return post.value.type === 'notice' ? '/notice' : '/blog'
   })
 
   const backText = computed(() => {
+    if (showcase.value && post.value?.type !== 'notice') return t('blogDetail.backToHome')
     if (!post.value) return t('blogDetail.backToBlog')
     return post.value.type === 'notice' ? t('blogDetail.backToNotice') : t('blogDetail.backToBlog')
   })

@@ -361,7 +361,12 @@ router.beforeEach(async (to, _from, next) => {
     // 主站只做展示：不能进入商品详情、全部商品、分类页、购物车、结算和订单查询，统一回到专区（或首页）。
     // 支付页 /pay 保留，用于开启展示模式之前已创建的订单继续付款。
     if (isMainShowcase(appStore.config as any)) {
-        const blocked = ['product-detail', 'products', 'category-products', 'cart', 'checkout', 'guest-orders', 'guest-order-detail']
+        // 官网首页就是文章列表，单独的博客列表页也回到首页
+        const blocked = ['product-detail', 'products', 'category-products', 'cart', 'checkout', 'guest-orders', 'guest-order-detail', 'blog']
+        if (to.name === 'blog') {
+            next('/')
+            return
+        }
         if (blocked.includes(String(to.name || ''))) {
             const zone = currentZone(appStore.config as any)
             const search = typeof to.query.search === 'string' ? to.query.search : ''

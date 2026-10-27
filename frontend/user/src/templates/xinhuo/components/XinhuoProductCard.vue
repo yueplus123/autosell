@@ -21,7 +21,7 @@
       <h3 class="truncate text-lg font-bold max-sm:text-[15px]">{{ title }}</h3>
       <p v-if="summary" class="mt-1.5 line-clamp-2 text-sm text-[color:var(--xh-muted)] max-sm:mt-0.5 max-sm:line-clamp-1 max-sm:text-xs">{{ summary }}</p>
       <p class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs text-[color:var(--xh-muted)] max-sm:mt-1 max-sm:text-[11px]">
-        <span class="sm:hidden">{{ fulfillmentLabel }}</span>
+        <span v-if="!showcase" class="sm:hidden">{{ fulfillmentLabel }}</span>
         <span v-if="!showcase">{{ stockLabel }}</span>
         <span v-if="categoryName">{{ categoryName }}</span>
       </p>
@@ -95,7 +95,8 @@ const fulfillmentLabel = computed(() => getFulfillmentTypeLabel(props.product?.f
 // 发货方式 + 后台给商品打的前两个标签（可用来写“质保 30 天”“独享账号”等）
 const badges = computed(() => {
   const list: { label: string; tone: string }[] = []
-  list.push({
+  // 官网只展示业务，不显示「自动交付 / 人工交付」这类发货信息
+  if (!showcase.value) list.push({
     label: fulfillmentLabel.value,
     tone: props.product?.fulfillment_type === 'auto' ? 'bg-[#e3f5ea] text-[#0f6b3a]' : 'bg-[#fdf1dc] text-[#8a4b08]',
   })
