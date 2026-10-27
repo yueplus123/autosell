@@ -96,7 +96,7 @@
     </section>
 
     <!-- ==================== 筛选条（吸顶）：子分类 + 搜索 ==================== -->
-    <div id="zone-shop" class="sticky top-14 z-40 scroll-mt-14 border-b backdrop-blur-xl" :class="isAi ? 'border-white/10 bg-black/85' : 'border-fuchsia-200/60 bg-white/85'">
+    <div id="zone-shop" class="sticky top-14 z-40 scroll-mt-14 sm:top-16 sm:scroll-mt-16 border-b backdrop-blur-xl" :class="isAi ? 'border-white/10 bg-black/85' : 'border-fuchsia-200/60 bg-white/85'">
       <div class="mx-auto flex max-w-[1200px] flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center">
         <div class="xh-scroll-x -mx-4 flex flex-1 gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           <button

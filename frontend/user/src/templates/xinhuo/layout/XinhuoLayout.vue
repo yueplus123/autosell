@@ -20,19 +20,20 @@
       :class="immersive ? 'fixed inset-x-0 top-0 px-3 sm:px-4' : 'sticky top-0 border-b border-[#1c1c1f] bg-black'"
     >
       <div
-        class="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-6 px-4 sm:px-6"
+        class="mx-auto flex h-14 w-full max-w-[1200px] items-center gap-6 px-4 sm:h-16 sm:px-6"
         :class="immersive ? 'rounded-b-2xl border border-t-0 border-white/15 bg-black/30 shadow-[0_8px_30px_rgba(0,0,0,0.18)] backdrop-blur-xl' : ''"
       >
-        <RouterLink :to="showcase ? '/' : homePath" class="flex min-w-0 items-center gap-2.5 text-[17px] font-bold text-[#f5f5f7]" :title="brandName">
-          <img v-if="brandLogo" :src="brandLogo" :alt="brandName" class="h-7 max-w-[140px] object-contain" />
-          <span v-else class="grid h-7 w-7 flex-none place-items-center rounded-lg bg-[color:var(--xh-accent)]">
-            <Flame class="h-4 w-4 text-white" />
+        <RouterLink :to="showcase ? '/' : homePath" class="flex min-w-0 flex-none items-center gap-2.5 text-lg font-bold tracking-[0.02em] text-[#f5f5f7] sm:gap-3 sm:text-xl" :title="brandName">
+          <!-- 尺寸参考 GitHub / Ethereal 顶栏：64px 高的顶栏配 36px 的 logo、20px 的站名；手机 56px 顶栏配 32px logo、18px 站名 -->
+          <img v-if="brandLogo" :src="brandLogo" :alt="brandName" class="h-8 max-w-[160px] object-contain sm:h-9 sm:max-w-[180px]" />
+          <span v-else class="grid h-8 w-8 flex-none place-items-center rounded-lg bg-[color:var(--xh-accent)] sm:h-9 sm:w-9">
+            <Flame class="h-5 w-5 text-white" />
           </span>
           <span class="truncate">{{ brandName }}</span>
         </RouterLink>
 
         <!-- 官网：首页 / AI 专区 / 二次元专区（两个专区是两个独立页面）；首页另有文章搜索 -->
-        <nav v-if="showcase" class="ml-2 flex items-center gap-6 text-sm max-[900px]:hidden">
+        <nav v-if="showcase" class="ml-4 flex items-center gap-7 text-[15px] max-[900px]:hidden">
           <RouterLink v-for="item in showcaseNav" :key="item.to" :to="item.to" class="whitespace-nowrap transition-colors hover:text-white" :class="item.active ? 'font-medium text-white' : 'text-[#d2d2d7]'">{{ item.label }}</RouterLink>
         </nav>
         <form v-if="immersive" class="relative ml-auto max-[900px]:hidden" role="search" @submit.prevent="submitSearch">
