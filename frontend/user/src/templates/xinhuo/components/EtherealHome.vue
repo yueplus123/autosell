@@ -25,7 +25,6 @@
 
         <!-- AI 业务图标 -->
         <BrandIconWall v-if="!hasWallpaper" class="mt-8 sm:mt-10" :icons="AI_ICONS" size="hero" :columns="6" :mobile-columns="4" />
-        </div>
 
         <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-10'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
           <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
