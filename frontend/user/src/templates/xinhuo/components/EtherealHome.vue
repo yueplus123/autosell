@@ -24,9 +24,9 @@
         </p>
 
         <!-- AI 业务图标 -->
-        <BrandIconWall v-if="!hasWallpaper" class="mt-8 sm:mt-10" :icons="AI_ICONS" size="hero" :columns="6" :mobile-columns="4" />
+        <BrandIconWall v-if="!hasWallpaper" class="mt-5 w-full max-w-[1240px] sm:mt-6" :tiles="HOME_AI_TILES" />
 
-        <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-10'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
+        <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-2'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
           <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
         </button>
       </div>
@@ -180,7 +180,7 @@ import { useLocalized } from '../../../composables/useProduct'
 import { useNavConfig } from '../../../composables/useNavConfig'
 import { useAppStore } from '../../../stores/app'
 import { openContactModal } from '../contactModal'
-import { AI_ICONS } from '../brandIcons'
+import { HOME_AI_TILES } from '../brandIcons'
 import BrandIconWall from './BrandIconWall.vue'
 import { ethDark, ethHue, ethLayout, etherealVars } from '../etherealTheme'
 

@@ -25,7 +25,7 @@
           </a>
         </div>
         <!-- AI 业务图标 -->
-        <BrandIconWall :icons="AI_ICONS" size="zone" :columns="4" :mobile-columns="4" />
+        <BrandIconWall :tiles="ZONE_AI_TILES" variant="zone" />
       </div>
     </section>
 
@@ -58,7 +58,7 @@
           </a>
         </div>
         <!-- 二次元业务图标 -->
-        <BrandIconWall :icons="ACG_ICONS" size="zone" :columns="4" :mobile-columns="4" />
+        <BrandIconWall :tiles="ZONE_ACG_TILES" variant="zone" />
       </div>
     </section>
 
@@ -134,7 +134,7 @@ import { usePageSeo } from '../../composables/usePageSeo'
 import type { PublicCategory } from '../../utils/category'
 import { businessZonePath, isBusinessLineKey, resolveBusinessLines, type BusinessLineKey } from '../../utils/businessLines'
 import XinhuoProductCard from './components/XinhuoProductCard.vue'
-import { ACG_ICONS, AI_ICONS } from './brandIcons'
+import { ZONE_ACG_TILES, ZONE_AI_TILES } from './brandIcons'
 import BrandIconWall from './components/BrandIconWall.vue'
 
 const route = useRoute()

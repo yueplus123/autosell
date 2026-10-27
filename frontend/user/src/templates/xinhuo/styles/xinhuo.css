@@ -216,3 +216,16 @@ body.xinhuo-tokens {
 .xh-scroll-x::-webkit-scrollbar {
   display: none;
 }
+
+/* 专区首屏的图标墙：正方形，电脑和手机共用一套坐标 */
+.xh-wall.xh-wall--zone {
+  aspect-ratio: 1 / 1;
+  max-width: 480px;
+  margin-inline: auto;
+}
+@media (max-width: 640px) {
+  .xh-wall.xh-wall--zone {
+    aspect-ratio: 1 / 1;
+    max-width: 360px;
+  }
+}
