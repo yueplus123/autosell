@@ -29,41 +29,39 @@
       </div>
     </section>
 
-    <!-- 二次元：粉紫橙渐变 + 游戏卡片 -->
-    <section v-else class="relative isolate overflow-hidden bg-linear-to-br from-violet-600 via-fuchsia-500 to-orange-400 text-white">
-      <div class="pointer-events-none absolute inset-0 -z-10 opacity-25" :style="dotStyle"></div>
-      <span class="pointer-events-none absolute -left-24 -top-24 -z-10 h-96 w-96 rounded-full bg-white/20 blur-3xl"></span>
-      <span class="pointer-events-none absolute -bottom-32 right-0 -z-10 h-[28rem] w-[28rem] rounded-full bg-amber-300/40 blur-3xl"></span>
-      <Star class="pointer-events-none absolute left-[7%] top-10 h-6 w-6 rotate-12 fill-white/80 text-white/80" aria-hidden="true" />
-      <Sparkle class="pointer-events-none absolute left-[44%] top-8 h-8 w-8 fill-yellow-200 text-yellow-200 max-md:hidden" aria-hidden="true" />
-      <Heart class="pointer-events-none absolute right-[6%] top-14 h-6 w-6 fill-rose-200 text-rose-200" aria-hidden="true" />
+    <!-- 二次元：樱花晨光配色（浅粉 / 淡紫 / 天蓝的柔和底色 + 深梅色文字） -->
+    <section v-else class="acg-hero relative isolate overflow-hidden text-[#2b2140]">
+      <div class="pointer-events-none absolute inset-0 -z-10 opacity-60" :style="dotStyle"></div>
+      <Star class="pointer-events-none absolute left-[7%] top-10 h-5 w-5 rotate-12 fill-[#ffc2d9] text-[#ffc2d9]" aria-hidden="true" />
+      <Sparkle class="pointer-events-none absolute left-[44%] top-8 h-7 w-7 fill-[#ffd98a] text-[#ffd98a] max-md:hidden" aria-hidden="true" />
+      <Heart class="pointer-events-none absolute right-[6%] top-14 h-5 w-5 fill-[#c9b8ff] text-[#c9b8ff]" aria-hidden="true" />
 
       <div class="mx-auto grid max-w-[1200px] items-center gap-12 px-4 pb-14 pt-12 sm:px-6 md:grid-cols-2 md:pb-20 md:pt-16">
         <div class="space-y-5 text-center md:text-left">
-          <span class="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-sm font-bold backdrop-blur-sm">
+          <span class="inline-flex items-center gap-2 rounded-full border border-[#ffd6e5] bg-white/80 px-4 py-1.5 text-sm font-bold text-[#e8457e] shadow-sm backdrop-blur-sm">
             <Gamepad2 class="h-4 w-4" aria-hidden="true" />
             {{ t('zone.game.badge') }}
           </span>
-          <h1 class="text-[clamp(34px,5.4vw,64px)] font-black leading-[1.08] tracking-[-0.02em] drop-shadow-sm">{{ t('home.business.game.title') }}</h1>
-          <p class="mx-auto max-w-xl text-[15px] leading-relaxed text-white/90 sm:text-[17px] md:mx-0">{{ t('zonePage.showcase.game.description') }}</p>
+          <h1 class="acg-title text-[clamp(34px,5.4vw,64px)] font-black leading-[1.12] tracking-[-0.02em]">{{ t('home.business.game.title') }}</h1>
+          <p class="mx-auto max-w-xl text-[15px] leading-relaxed text-[#6b5f80] sm:text-[17px] md:mx-0">{{ t('zonePage.showcase.game.description') }}</p>
           <div class="flex flex-wrap justify-center gap-2 md:justify-start">
-            <span v-for="i in 3" :key="i" class="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3.5 py-1.5 text-sm font-semibold backdrop-blur-sm">
-              <Heart class="h-3.5 w-3.5 fill-current" aria-hidden="true" />
+            <span v-for="i in 3" :key="i" class="inline-flex items-center gap-1.5 rounded-full border border-white bg-white/70 px-3.5 py-1.5 text-sm font-semibold text-[#2b2140] shadow-sm backdrop-blur-sm">
+              <Heart class="h-3.5 w-3.5 fill-[#ff6b9a] text-[#ff6b9a]" aria-hidden="true" />
               {{ t(`zonePage.showcase.game.highlight${i}`) }}
             </span>
           </div>
-          <a href="#zone-shop" class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-[15px] font-bold text-fuchsia-600 shadow-xl shadow-fuchsia-900/20 transition hover:scale-105" @click.prevent="scrollToShop">
+          <a href="#zone-shop" class="inline-flex items-center gap-2 rounded-full bg-linear-to-r from-[#ff6b9a] to-[#8b6cff] px-6 py-3 text-[15px] font-bold text-white shadow-[0_12px_30px_rgba(232,69,126,0.28)] transition hover:scale-105" @click.prevent="scrollToShop">
             {{ t('zonePage.browse') }}
             <ArrowDown class="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
         <!-- 二次元业务图标 -->
-        <BrandIconWall :tiles="ZONE_ACG_TILES" variant="zone" />
+        <BrandIconWall class="acg-wall" :tiles="ZONE_ACG_TILES" variant="zone" />
       </div>
     </section>
 
     <!-- ==================== 筛选条（吸顶）：子分类 + 搜索 ==================== -->
-    <div id="zone-shop" class="sticky top-14 z-40 scroll-mt-14 sm:top-16 sm:scroll-mt-16 border-b backdrop-blur-xl" :class="isAi ? 'border-white/10 bg-black/85' : 'border-fuchsia-200/60 bg-white/85'">
+    <div id="zone-shop" class="sticky top-14 z-40 scroll-mt-14 sm:top-16 sm:scroll-mt-16 border-b backdrop-blur-xl" :class="isAi ? 'border-white/10 bg-black/85' : 'border-[#f6dbe7] bg-white/85'">
       <div class="mx-auto flex max-w-[1200px] flex-col gap-3 px-4 py-3 sm:px-6 md:flex-row md:items-center">
         <div class="xh-scroll-x -mx-4 flex flex-1 gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           <button
@@ -93,7 +91,7 @@
         <XinhuoProductCard v-for="(product, idx) in products" :key="product.id" :product="product" :index="idx" :tone="zoneKey" />
       </div>
       <div v-else class="flex flex-col items-center gap-3 rounded-[24px] bg-white px-6 py-16 text-center">
-        <span class="grid h-14 w-14 place-items-center rounded-2xl text-white" :class="isAi ? 'bg-black' : 'bg-linear-to-br from-violet-600 via-fuchsia-500 to-orange-400'">
+        <span class="grid h-14 w-14 place-items-center rounded-2xl text-white" :class="isAi ? 'bg-black' : 'bg-linear-to-br from-[#ff6b9a] to-[#8b6cff]'">
           <component :is="isAi ? Sparkles : Gamepad2" class="h-6 w-6" aria-hidden="true" />
         </span>
         <p class="text-lg font-bold">{{ appliedSearch ? t('products.empty') : t('zone.empty') }}</p>
@@ -111,7 +109,7 @@
           :key="p"
           type="button"
           class="h-10 min-w-10 rounded-full px-3 text-sm font-semibold"
-          :class="p === page ? (isAi ? 'bg-black text-white' : 'bg-fuchsia-500 text-white') : 'border bg-white'"
+          :class="p === page ? (isAi ? 'bg-black text-white' : 'bg-[#e8457e] text-white') : 'border bg-white'"
           @click="goPage(p)"
         >{{ p }}</button>
         <button type="button" class="grid h-10 w-10 place-items-center rounded-full border bg-white disabled:opacity-40" :disabled="page >= totalPages" :aria-label="t('common.nextBanner')" @click="goPage(page + 1)">
@@ -173,14 +171,14 @@ const filterOptions = computed(() => [
 
 const chipClass = (active: boolean) => {
   if (isAi.value) return active ? 'border-cyan-300 bg-cyan-300 text-black' : 'border-white/15 text-white/80 hover:border-white/40 hover:text-white'
-  return active ? 'border-transparent bg-linear-to-r from-violet-600 via-fuchsia-500 to-orange-400 text-white' : 'border-fuchsia-200 bg-white text-[color:var(--xh-ink)] hover:border-fuchsia-400'
+  return active ? 'border-transparent bg-linear-to-r from-[#ff6b9a] to-[#8b6cff] text-white' : 'border-[#f6dbe7] bg-white text-[color:var(--xh-ink)] hover:border-[#ff9cbd] hover:text-[#e8457e]'
 }
 
 const listTitle = computed(() => (selectedChild.value ? catName(selectedChild.value) : t(`zonePage.${zoneKey.value}.listTitle`)))
 
 // ==================== 首屏图标（官网专区：AI / 二次元业务图标，见 brandIcons.ts） ====================
 const dotStyle = {
-  backgroundImage: 'radial-gradient(rgba(255,255,255,0.5) 1.2px, transparent 1.2px)',
+  backgroundImage: 'radial-gradient(rgba(139,108,255,0.14) 1.2px, transparent 1.2px)',
   backgroundSize: '22px 22px',
 }
 
@@ -264,3 +262,36 @@ onMounted(async () => {
   await loadProducts()
 })
 </script>
+
+<style scoped>
+/* 二次元专区首屏：樱花晨光配色 */
+.acg-hero {
+  background:
+    radial-gradient(ellipse at 8% 0%, rgba(255, 182, 213, 0.75), transparent 52%),
+    radial-gradient(ellipse at 92% 18%, rgba(201, 184, 255, 0.7), transparent 50%),
+    radial-gradient(ellipse at 70% 100%, rgba(167, 214, 255, 0.6), transparent 55%),
+    linear-gradient(180deg, #fff7fb 0%, #f7f3ff 100%);
+}
+.acg-title {
+  background: linear-gradient(100deg, #2b2140 0%, #5b3f8c 45%, #e8457e 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+/* 浅色底上的图标砖块：阴影改成柔和的紫粉色，倒影更淡 */
+.acg-wall :deep(.xh-tile--light) {
+  background: linear-gradient(180deg, #ffffff, #f6f2fb);
+  box-shadow:
+    0 16px 32px rgba(139, 108, 255, 0.16),
+    0 0 36px var(--glow, transparent),
+    inset 0 2px 0 #fff,
+    inset 0 -5px 12px rgba(139, 108, 255, 0.08);
+}
+.acg-wall :deep(.xh-tile--front) {
+  -webkit-box-reflect: below 10px linear-gradient(transparent 70%, rgba(255, 255, 255, 0.35));
+}
+.acg-wall :deep(.xh-tile--back) {
+  filter: blur(0.6px);
+  opacity: 0.92;
+}
+</style>
