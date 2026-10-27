@@ -24,22 +24,8 @@
             <ArrowDown class="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
-        <!-- 产品图标：取 AI 子分类上传的图标，没有时用默认 AI 图标 -->
-        <div class="grid grid-cols-3 gap-3 sm:gap-4" aria-hidden="true">
-          <button
-            v-for="(tile, i) in heroTiles"
-            :key="tile.key"
-            type="button"
-            class="group grid aspect-square place-items-center rounded-[24%] transition duration-300 hover:-translate-y-1"
-            :class="[tile.dark ? 'border border-white/15 bg-linear-to-b from-neutral-800 to-black' : 'bg-linear-to-b from-white to-slate-200', i === 4 ? 'scale-110' : '']"
-            :style="{ boxShadow: `0 20px 40px rgba(0,0,0,0.6), 0 0 44px ${tile.glow}` }"
-            tabindex="-1"
-            @click="selectChild(tile.slug)"
-          >
-            <img v-if="tile.src" :src="tile.src" alt="" class="h-[52%] w-[52%] object-contain" :class="tile.invert ? 'invert' : ''" />
-            <span v-else class="text-2xl font-black sm:text-3xl" :class="tile.dark ? 'text-white' : 'text-[#1d1d1f]'">{{ tile.initial }}</span>
-          </button>
-        </div>
+        <!-- AI 业务图标 -->
+        <BrandIconWall :icons="AI_ICONS" size="zone" :columns="4" :mobile-columns="4" />
       </div>
     </section>
 
@@ -71,27 +57,8 @@
             <ArrowDown class="h-4 w-4" aria-hidden="true" />
           </a>
         </div>
-        <!-- 游戏卡片扇形展开：点卡片直接筛选该游戏 -->
-        <div class="flex justify-center">
-          <div class="relative flex h-56 w-full max-w-md items-center justify-center sm:h-72">
-            <button
-              v-for="card in gameCards"
-              :key="card.key"
-              type="button"
-              class="absolute flex h-44 w-32 flex-col items-center justify-end overflow-hidden rounded-3xl border-4 border-white/80 bg-white shadow-2xl shadow-fuchsia-950/30 transition duration-300 hover:z-20 hover:-translate-y-4 sm:h-60 sm:w-44"
-              :style="{ transform: `translateX(${card.fan.x}) rotate(${card.fan.r}deg)`, zIndex: card.fan.z }"
-              :aria-label="card.label || t('zone.game.badge')"
-              @click="selectChild(card.slug)"
-            >
-              <img v-if="card.icon" :src="card.icon" :alt="card.label" class="absolute inset-0 h-full w-full object-cover" />
-              <div v-else class="absolute inset-0 grid place-items-center" :class="card.fan.bg">
-                <span v-if="card.initial" class="text-5xl font-black text-white/95 drop-shadow sm:text-6xl">{{ card.initial }}</span>
-                <component :is="card.fan.icon" v-else class="h-12 w-12 text-white/95" aria-hidden="true" />
-              </div>
-              <span v-if="card.label" class="relative z-10 w-full bg-linear-to-t from-black/70 to-transparent px-2 pb-3 pt-8 text-center text-sm font-bold text-white">{{ card.label }}</span>
-            </button>
-          </div>
-        </div>
+        <!-- 二次元业务图标 -->
+        <BrandIconWall :icons="ACG_ICONS" size="zone" :columns="4" :mobile-columns="4" />
       </div>
     </section>
 
@@ -162,13 +129,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import { ArrowDown, Check, ChevronLeft, ChevronRight, Gamepad2, Heart, Sparkle, Sparkles, Star } from 'lucide-vue-next'
 import { categoryAPI, productAPI } from '../../api'
-import { getImageUrl } from '../../utils/image'
 import { useLocalized } from '../../composables/useProduct'
 import { usePageSeo } from '../../composables/usePageSeo'
 import type { PublicCategory } from '../../utils/category'
 import { businessZonePath, isBusinessLineKey, resolveBusinessLines, type BusinessLineKey } from '../../utils/businessLines'
 import XinhuoProductCard from './components/XinhuoProductCard.vue'
-import { HERO_ICON_BASE } from './heroTiles'
+import { ACG_ICONS, AI_ICONS } from './brandIcons'
+import BrandIconWall from './components/BrandIconWall.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -211,42 +178,7 @@ const chipClass = (active: boolean) => {
 
 const listTitle = computed(() => (selectedChild.value ? catName(selectedChild.value) : t(`zonePage.${zoneKey.value}.listTitle`)))
 
-// ==================== 首屏图块 ====================
-const AI_DEFAULTS = [
-  { file: 'chatgpt.png', dark: true, invert: true, glow: 'rgba(34,211,238,0.25)' },
-  { file: 'gemini.png', dark: false, invert: false, glow: 'rgba(59,130,246,0.35)' },
-  { file: 'grok.png', dark: true, invert: true, glow: 'rgba(168,85,247,0.3)' },
-  { file: 'apple.png', dark: false, invert: false, glow: 'rgba(148,163,184,0.3)' },
-  { file: 'visa.png', dark: false, invert: false, glow: 'rgba(37,99,235,0.35)' },
-  { file: 'gmail.png', dark: true, invert: false, glow: 'rgba(239,68,68,0.3)' },
-]
-// AI 子分类有上传图标时优先显示；不足 6 个用默认 AI 图标补齐
-const heroTiles = computed(() => {
-  const withIcon = children.value.filter((c) => typeof c.icon === 'string' && c.icon.trim())
-  return AI_DEFAULTS.map((def, i) => {
-    const cat = withIcon[i]
-    if (cat) {
-      return { key: `cat-${cat.id}`, slug: String(cat.slug), src: getImageUrl(String(cat.icon)), initial: '', dark: def.dark, invert: false, glow: def.glow }
-    }
-    return { key: `def-${i}`, slug: '', src: HERO_ICON_BASE + def.file, initial: '', dark: def.dark, invert: def.invert, glow: def.glow }
-  })
-})
-
-const FAN = [
-  { x: '-46%', r: -14, z: 1, bg: 'bg-linear-to-br from-sky-400 to-violet-500', icon: Star },
-  { x: '-15%', r: -5, z: 3, bg: 'bg-linear-to-br from-pink-400 to-rose-500', icon: Heart },
-  { x: '15%', r: 5, z: 4, bg: 'bg-linear-to-br from-amber-300 to-orange-500', icon: Sparkles },
-  { x: '46%', r: 14, z: 2, bg: 'bg-linear-to-br from-emerald-300 to-teal-500', icon: Gamepad2 },
-]
-const gameCards = computed(() =>
-  FAN.map((fan, i) => {
-    const cat = children.value[i]
-    if (!cat) return { key: `placeholder-${i}`, fan, slug: '', label: '', icon: '', initial: '' }
-    const label = catName(cat)
-    return { key: `cat-${cat.id}`, fan, slug: String(cat.slug), label, icon: cat.icon ? getImageUrl(String(cat.icon)) : '', initial: label.slice(0, 1) }
-  }),
-)
-
+// ==================== 首屏图标（官网专区：AI / 二次元业务图标，见 brandIcons.ts） ====================
 const dotStyle = {
   backgroundImage: 'radial-gradient(rgba(255,255,255,0.5) 1.2px, transparent 1.2px)',
   backgroundSize: '22px 22px',

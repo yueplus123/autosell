@@ -23,21 +23,11 @@
           <span>{{ typedSubtitle }}</span><span class="eth-caret" aria-hidden="true">|</span>
         </p>
 
-        <div v-if="!hasWallpaper" class="xh-wall mt-5 w-full max-w-[1240px] sm:mt-6">
-          <div
-            v-for="tile in wallTiles"
-            :key="tile.icon"
-            role="img"
-            :aria-label="tile.label"
-            class="xh-tile"
-            :class="[`xh-tile--${tile.tone}`, `xh-tile--${tile.row}`, { 'xh-tile--wide': tile.wide }]"
-            :style="tile.style"
-          >
-            <img :src="tile.src" alt="" />
-          </div>
+        <!-- AI 业务图标 -->
+        <BrandIconWall v-if="!hasWallpaper" class="mt-8 sm:mt-10" :icons="AI_ICONS" size="hero" :columns="6" :mobile-columns="4" />
         </div>
 
-        <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-2'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
+        <button type="button" class="eth-hero-icon" :class="hasWallpaper ? 'mt-7' : 'mt-10'" :aria-label="t('xinhuo.ethereal.toArticles')" @click="scrollToArticles">
           <ChevronDown class="h-[18px] w-[18px]" aria-hidden="true" />
         </button>
       </div>
@@ -191,7 +181,8 @@ import { useLocalized } from '../../../composables/useProduct'
 import { useNavConfig } from '../../../composables/useNavConfig'
 import { useAppStore } from '../../../stores/app'
 import { openContactModal } from '../contactModal'
-import { HERO_ICON_BASE, heroTiles } from '../heroTiles'
+import { AI_ICONS } from '../brandIcons'
+import BrandIconWall from './BrandIconWall.vue'
 import { ethDark, ethHue, ethLayout, etherealVars } from '../etherealTheme'
 
 const { t } = useI18n()
@@ -236,21 +227,6 @@ const heroBackgrounds = computed(() => {
 const hasWallpaper = computed(() => banners.value.some((b) => String(b?.image || '').trim()))
 const firstBanner = computed(() => banners.value[0])
 
-// 默认首屏：沿用之前的 AI / Visa / 二次元 图标墙
-const wallTiles = heroTiles.map((tile) => ({
-  ...tile,
-  src: HERO_ICON_BASE + tile.icon,
-  style: {
-    '--x': `${tile.x}%`,
-    '--y': `${tile.y}%`,
-    '--s': `${tile.s}%`,
-    '--mx': `${tile.mx}%`,
-    '--my': `${tile.my}%`,
-    '--ms': `${tile.ms}%`,
-    ...(tile.glow ? { '--glow': tile.glow } : {}),
-    zIndex: tile.z ?? 1,
-  } as Record<string, string | number>,
-}))
 const heroTitle = computed(() => getLocalizedText(firstBanner.value?.title).trim() || t('xinhuo.hero.title'))
 const heroSubtitleFull = computed(() => getLocalizedText(firstBanner.value?.subtitle).trim() || t('xinhuo.hero.subtitle'))
 
